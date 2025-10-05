@@ -1,0 +1,76 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <EnumerationTextList Name="E_ConnectionSteps" Id="{2f377182-f80b-4df7-a6da-52154665ce95}">
+    <Declaration><![CDATA[TYPE E_ConnectionSteps :
+(
+	eCONNECTION_STATE_IDLE,
+	eCONNECTION_STATE_CONNECT_START,
+	eCONNECTION_STATE_CONNECT_WAIT,
+	eCONNECTION_STATE_DATAEXCHANGE,
+	eCONNECTION_STATE_CLOSE_START,
+	eCONNECTION_STATE_CLOSE_WAIT,
+	eCONNECTION_STATE_ERROR
+);
+END_TYPE
+]]></Declaration>
+    <XmlArchive>
+      <Data>
+        <o xml:space="preserve" t="TextListEnumerationTextListObject">
+          <l n="TextList" t="ArrayList" cet="TextListRow">
+            <o>
+              <v n="TextID">"eCONNECTION_STATE_IDLE"</v>
+              <v n="TextDefault">""</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"eCONNECTION_STATE_CONNECT_START"</v>
+              <v n="TextDefault">""</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"eCONNECTION_STATE_CONNECT_WAIT"</v>
+              <v n="TextDefault">""</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"eCONNECTION_STATE_DATAEXCHANGE"</v>
+              <v n="TextDefault">""</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"eCONNECTION_STATE_CLOSE_START"</v>
+              <v n="TextDefault">""</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"eCONNECTION_STATE_CLOSE_WAIT"</v>
+              <v n="TextDefault">""</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">"eCONNECTION_STATE_ERROR"</v>
+              <v n="TextDefault">""</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+            <o>
+              <v n="TextID">""</v>
+              <v n="TextDefault">""</v>
+              <l n="LanguageTexts" t="ArrayList" />
+            </o>
+          </l>
+          <l n="Languages" t="ArrayList" />
+          <v n="GuidInit">{db0cb69b-dcb3-455f-81af-36048eca018b}</v>
+          <v n="GuidReInit">{19afefa0-91c0-4886-9066-c6c6579fb6cd}</v>
+          <v n="GuidExitX">{67ce31be-3d32-40f4-9e65-7c0f3e0a7a73}</v>
+        </o>
+      </Data>
+      <TypeList>
+        <Type n="ArrayList">System.Collections.ArrayList</Type>
+        <Type n="Guid">System.Guid</Type>
+        <Type n="String">System.String</Type>
+        <Type n="TextListEnumerationTextListObject">{4b60233c-f940-4beb-b331-82133b520151}</Type>
+        <Type n="TextListRow">{53da1be7-ad25-47c3-b0e8-e26286dad2e0}</Type>
+      </TypeList>
+    </XmlArchive>
+  </EnumerationTextList>
+</TcPlcObject>

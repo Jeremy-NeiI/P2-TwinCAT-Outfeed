@@ -1,0 +1,38 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="FB_Blinker" Id="{32f2a068-8794-40ee-9820-cf78a9259d46}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Blinker
+VAR_INPUT
+	BlinkInterval : TIME := T#500MS;  (* Blink interval time (default 500 ms) *)
+    EnableBlinking : BOOL := TRUE;    (* Enable or disable blinking *)
+END_VAR
+VAR_OUTPUT
+	LightOutput : BOOL := FALSE;      (* Output variable for the light *)
+END_VAR
+VAR
+	BlinkTimer : TON;                 (* Timer instance for blinking *)
+    BlinkToggle : BOOL := FALSE;      (* Toggle variable for blinking *)
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[(* Blinker logic implementation *)
+IF EnableBlinking THEN
+    BlinkTimer(IN := TRUE, PT := BlinkInterval);  (* Start the timer with the specified interval *)
+    
+    IF BlinkTimer.Q THEN
+        BlinkToggle := NOT BlinkToggle;   (* Toggle the BlinkToggle variable *)
+        BlinkTimer(IN := FALSE);          (* Reset the timer *)
+        BlinkTimer(IN := TRUE);           (* Start the timer again *)
+    END_IF;
+ELSE
+    BlinkToggle := FALSE;  (* Ensure the light is off if blinking is disabled *)
+END_IF;
+
+LightOutput := BlinkToggle;]]></ST>
+    </Implementation>
+    <LineIds Name="FB_Blinker">
+      <LineId Id="47" Count="12" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,144 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="FB_Keyence" Id="{da377b05-08b8-477a-a98a-0f7a26e404a9}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Keyence
+VAR_INPUT
+	bKUKA_JobDone					: BOOL := TRUE	;
+	
+END_VAR
+VAR_OUTPUT
+	Outfeed_Complete				: BOOL	;
+	bResetData						: BOOL;
+	
+END_VAR
+VAR
+	iSTEP 							: INT := 0;
+	i 								: INT ;
+	j 								: INT ;
+	Floor2BoxId						: STRING(20);
+	Floor1BoxId						: STRING(20);
+
+//=============Outfeed: PLC to WCS Comms===================
+	ReadyTo_DropTask				: INT := 0;
+	ReadyFor_DropOff				: INT := 0;
+	Receive_DropOffComplete			: INT := 0;
+	Request_KukaRackLocation 		: INT := 0;
+	KukaRack_InsertComplete 		: INT := 0;
+//=============Infeed: PLC to WCS Comms===================
+	BinReadyAtPickupZone 			: INT := 0;
+	ReadyToPickup 					: INT := 0;
+	ReceivePickupComplete 			: INT := 0;
+	
+	
+	//=============Outfeed: WCS to PLC Comms===================
+	RequestTo_DropTask 				: INT := 0;
+	RequestTo_DropOff 				: INT := 1;
+	DropOff_Complete 				: INT := 2;
+	QRCode_Approve					: INT := 3;
+	Kuka_RackLocation				: INT := 4;
+	Receive_KukaRackInsertComplete	: INT := 5;
+//=============Infeed: WCS to PLC Comms====================
+	CheckQRCodeID 					: INT := 6;
+	ReceiveBinReadyAtPickupZone 	: INT := 7;
+	RequestPickup 					: INT := 8;
+	PickupComplete 					: INT := 9;
+	
+	bInsert_binID					: BOOL := FALSE;
+	withBoxId 						: BOOL := FALSE;
+	sSend_Message 					: STRING;
+	sReceived_Message 				: STRING;
+	aReceived_Message_Array			: ARRAY[0..19] OF STRING;
+	iReceived_Message_data 			: INT;
+	data_send_flag					: BOOL := FALSE;
+	returnLen 						: INT;
+	bOnly_Blank						: BOOL;
+	Run_Comms						: BOOL := FALSE;
+	notEmpty 						: BOOL;
+	resetData 						: BOOL := FALSE;
+	
+	Cam_Timeout							: TON ;
+	log_true						: INT := 0;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+IF IO.fbClient_QR.bConnected THEN
+	IF IO.bScan_Fire THEN
+		IO.fbClient_QR.fbRx.sPut := 'null';
+		IO_Conveyor.bScan_Start := TRUE;
+		IO.sCam_msg := IO.QR_Read_ON;
+		IO.fbClient_QR.fbTx.AddTail( sPut := IO.sCam_msg); //$R = Carriage Return [CR]
+		IO.bScan_Fire := FALSE;
+	END_IF
+END_IF	
+
+IF IO.fbClient_QR.fbRx.sPut <> 'null' THEN
+	IO.sCam_Received_msg := IO.fbClient_QR.fbRx.sPut;
+	IF LEFT(IO.sCam_Received_msg, 3) = 'YI-' THEN
+		IO.sClean_binID := LEFT(IO.sCam_Received_msg, LEN(IO.sCam_Received_msg) - 1 );
+		IO.sOutfeed_binID := IO.sClean_binID;
+		IO.uiScanSeq := IO.uiScanSeq + 1;
+		IO_Conveyor.bScan_Start := FALSE;
+		IO_Conveyor.bScan_Complete := TRUE;
+	ELSIF LEFT(IO.sCam_Received_msg, 3) <> 'YI-' AND Cam_Timeout.Q THEN
+		IO_Conveyor.bScan_ERROR := FALSE;
+		IO_Conveyor.bScan_Failed := TRUE;
+//	ELSIF Cam_Timeout.Q THEN
+//		IO_Conveyor.bScan_ERROR := TRUE;
+//		IO.sClean_binID := LEFT(IO.sCam_Received_msg, LEN(IO.sCam_Received_msg) - 1 );
+//		IO.sOutfeed_binID := IO.sClean_binID;	
+//		bResetData := TRUE;
+	END_IF
+END_IF
+
+
+IF bResetData THEN
+	IO.sCam_msg := '';
+	bResetData := FALSE;
+	IO.sCam_Received_msg := '';
+END_IF
+
+//watchdog
+Cam_Timeout(IN:= IO_Conveyor.bScan_Start, PT:= T#5S,);
+
+]]></ST>
+    </Implementation>
+    <LineIds Name="FB_Keyence">
+      <LineId Id="1069" Count="0" />
+      <LineId Id="14" Count="0" />
+      <LineId Id="493" Count="0" />
+      <LineId Id="770" Count="0" />
+      <LineId Id="678" Count="0" />
+      <LineId Id="494" Count="2" />
+      <LineId Id="18" Count="0" />
+      <LineId Id="21" Count="0" />
+      <LineId Id="774" Count="0" />
+      <LineId Id="773" Count="0" />
+      <LineId Id="109" Count="0" />
+      <LineId Id="357" Count="0" />
+      <LineId Id="687" Count="0" />
+      <LineId Id="758" Count="0" />
+      <LineId Id="1011" Count="0" />
+      <LineId Id="755" Count="0" />
+      <LineId Id="951" Count="1" />
+      <LineId Id="1071" Count="0" />
+      <LineId Id="953" Count="0" />
+      <LineId Id="749" Count="0" />
+      <LineId Id="756" Count="0" />
+      <LineId Id="760" Count="1" />
+      <LineId Id="759" Count="0" />
+      <LineId Id="686" Count="0" />
+      <LineId Id="796" Count="0" />
+      <LineId Id="893" Count="0" />
+      <LineId Id="498" Count="0" />
+      <LineId Id="613" Count="0" />
+      <LineId Id="617" Count="1" />
+      <LineId Id="679" Count="0" />
+      <LineId Id="615" Count="0" />
+      <LineId Id="1070" Count="0" />
+      <LineId Id="753" Count="0" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="871" Count="0" />
+      <LineId Id="870" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
