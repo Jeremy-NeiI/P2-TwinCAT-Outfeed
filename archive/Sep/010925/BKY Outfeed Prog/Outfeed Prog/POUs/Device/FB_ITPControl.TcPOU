@@ -1,0 +1,78 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="FB_ITPControl" Id="{be4c051b-7eba-40f1-a464-1f632193f24a}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_ITPControl
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	bSave_State			:	BOOL := FALSE	;
+	bMotor1_IsMoving	:	BOOL := FALSE	;
+	bMotor2_IsMoving	:	BOOL := FALSE	;
+	bMotor3_IsMoving	:	BOOL := FALSE	;
+	bMotor4_IsMoving	:	BOOL := FALSE	;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF IO_control.bStop  THEN
+	IF IO.bInterrupt_State THEN
+		IF NOT bSave_State THEN
+			IO_Conveyor.bMotor1_State := IO.bMotor1 ;
+			IO_Conveyor.bMotor2_State := IO.bMotor2 ;
+			IO_Conveyor.bMotor3_State := IO.bMotor3 ;
+			IO_Conveyor.bMotor4_State := IO.bMotor4 ;
+			bSave_State := TRUE ;
+		END_IF	
+	 
+		IO_control.bMotor1 := FALSE ;
+		IO_control.bMotor2 := FALSE ;
+		IO_control.bMotor3 := FALSE ;
+		IO_control.bMotor4 := FALSE ;	
+	END_IF
+
+ELSIF IO_control.bManualToggle THEN
+	IF IO.bManualMode THEN
+		bSave_State := FALSE ;
+		bMotor1_IsMoving := FALSE ;
+		bMotor2_IsMoving := FALSE ;
+		bMotor3_IsMoving := FALSE ;
+		bMotor4_IsMoving := FALSE ;
+	END_IF	
+	
+ELSIF IO_control.bStart THEN
+	IF IO.bAutoMode AND bSave_State THEN
+		bSave_State := FALSE ;
+		IO_control.bMotor1 := IO_Conveyor.bMotor1_State ;
+		IO_control.bMotor2 := IO_Conveyor.bMotor2_State ;
+		IO_control.bMotor3 := IO_Conveyor.bMotor3_State ;
+		IO_control.bMotor4 := IO_Conveyor.bMotor4_State ;
+	END_IF
+
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="FB_ITPControl">
+      <LineId Id="79" Count="0" />
+      <LineId Id="34" Count="1" />
+      <LineId Id="12" Count="0" />
+      <LineId Id="14" Count="2" />
+      <LineId Id="36" Count="1" />
+      <LineId Id="83" Count="0" />
+      <LineId Id="19" Count="0" />
+      <LineId Id="21" Count="2" />
+      <LineId Id="80" Count="0" />
+      <LineId Id="114" Count="0" />
+      <LineId Id="107" Count="6" />
+      <LineId Id="106" Count="0" />
+      <LineId Id="40" Count="0" />
+      <LineId Id="38" Count="0" />
+      <LineId Id="81" Count="0" />
+      <LineId Id="41" Count="0" />
+      <LineId Id="137" Count="2" />
+      <LineId Id="136" Count="0" />
+      <LineId Id="82" Count="0" />
+      <LineId Id="96" Count="0" />
+      <LineId Id="13" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

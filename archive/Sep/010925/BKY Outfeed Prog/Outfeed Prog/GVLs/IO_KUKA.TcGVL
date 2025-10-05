@@ -1,0 +1,190 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <GVL Name="IO_KUKA" Id="{270b25af-010c-40f3-b74f-8d860085ec45}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+VAR_GLOBAL
+
+// ================================================  input kuka dword
+	PLC_I_D1 AT %I* : DWORD;	//robot program
+	PLC_I_D2 AT %I* : DWORD;	//robot system (move_enable......)
+	
+	PLC_I_D3 AT %I* : DWORD;	//axis_act_a1
+	PLC_I_D4 AT %I* : DWORD;	//axis_act_a2
+	PLC_I_D5 AT %I* : DWORD;	//axis_act_a3
+	PLC_I_D6 AT %I* : DWORD;	//axis_act_a4
+	PLC_I_D7 AT %I* : DWORD;	//axis_act_a5
+	PLC_I_D8 AT %I* : DWORD;	//axis_act_a6
+	
+	PLC_I_D9 AT %I* : DWORD;	//curr_act_a1
+	PLC_I_D10 AT %I* : DWORD;	//curr_act_a2
+	PLC_I_D11 AT %I* : DWORD;	//curr_act_a3
+	PLC_I_D12 AT %I* : DWORD;	//curr_act_a4	
+	PLC_I_D13 AT %I* : DWORD;	//curr_act_a5
+	PLC_I_D14 AT %I* : DWORD;	//curr_act_a6
+
+	PLC_I_D15 AT %I* : DWORD;	//mot_temp_a1
+	PLC_I_D16 AT %I* : DWORD;	//mot_temp_a2
+	PLC_I_D17 AT %I* : DWORD;	//mot_temp_a3
+	PLC_I_D18 AT %I* : DWORD;	//mot_temp_a4
+	PLC_I_D19 AT %I* : DWORD;	//mot_temp_a5
+	PLC_I_D20 AT %I* : DWORD;	//mot_temp_a6
+
+
+// ================================================  output kuka dword
+	PLC_O_D1 AT %Q* : DWORD;	//robot program (jobstart/jobdone)
+	PLC_O_D2 AT %Q* : DWORD;	//robot system (T1, Ext.......)
+	
+	PLC_O_D3 AT %Q* : DWORD;	//axis_act_a1
+	PLC_O_D4 AT %Q* : DWORD;	//axis_act_a1
+	PLC_O_D5 AT %Q* : DWORD;	//axis_act_a1
+	PLC_O_D6 AT %Q* : DWORD;	//axis_act_a1
+	PLC_O_D7 AT %Q* : DWORD;	//axis_act_a1
+	PLC_O_D8 AT %Q* : DWORD;	//axis_act_a1
+	
+	PLC_O_D9 AT %Q* : DWORD;	//curr_act_a1
+	PLC_O_D10 AT %Q* : DWORD;	//curr_act_a2
+	PLC_O_D11 AT %Q* : DWORD;	//curr_act_a3
+	PLC_O_D12 AT %Q* : DWORD;	//curr_act_a4	
+	PLC_O_D13 AT %Q* : DWORD;	//curr_act_a5
+	PLC_O_D14 AT %Q* : DWORD;	//curr_act_a6
+
+	PLC_O_D15 AT %Q* : DWORD;	//mot_temp_a1
+	PLC_O_D16 AT %Q* : DWORD;	//mot_temp_a2
+	PLC_O_D17 AT %Q* : DWORD;	//mot_temp_a3
+	PLC_O_D18 AT %Q* : DWORD;	//mot_temp_a4
+	PLC_O_D19 AT %Q* : DWORD;	//mot_temp_a5
+	PLC_O_D20 AT %Q* : DWORD;	//mot_temp_a6
+
+////PLC Input
+//	PLC_I_D1 AT %I* : USINT;
+//	PLC_I_D2 AT %I* : USINT;
+//	PLC_I_D3 AT %I* : USINT;
+//	PLC_I_D4 AT %I* : USINT;
+//	PLC_I_D5 AT %I* : USINT;
+//	PLC_I_D6 AT %I* : USINT;
+
+			
+
+////PLC Output
+//	PLC_O_D1 AT %Q* : USINT;
+//	PLC_O_D2 AT %Q* : USINT;
+//	PLC_O_D3 AT %Q* : USINT;
+//	PLC_O_D4 AT %Q* : USINT;
+//	PLC_O_D5 AT %Q* : USINT;
+//	PLC_O_D6 AT %Q* : USINT;
+	
+	KR_Estop		: BOOL;
+	Idle			: BOOL;
+	Motion_Disable	: BOOL;
+	KROnline		: BOOL;
+	KR_OnStandby	: BOOL;
+	
+	bOutBit 		: ARRAY [1..20,0..31] OF BOOL;
+	bInBit 			: ARRAY [1..20,0..31] OF BOOL;
+	Init_Cmd		: BOOL;		
+	
+//KUKA I/O
+	(*================= INPUT =======================*)
+	bMove_enable		: BOOL := FALSE;
+	bDrive_off			: BOOL := FALSE;
+	bIO_Act				: BOOL := FALSE;
+	bExt_start			: BOOL := FALSE;
+	bConf_msg			: BOOL := FALSE;
+	bDrive_on			: BOOL := FALSE;
+	bPG_fbit			: BOOL := FALSE;
+	bPG_valid			: BOOL := FALSE;
+	bPG_parity			: BOOL := FALSE;
+		
+	(*================= OUTPUT =======================*)
+	
+	bT1_mode			: BOOL := FALSE;
+	bT2_mode			: BOOL := FALSE;
+	bAUT_mode			: BOOL := FALSE;
+	bEXT_mode			: BOOL := FALSE;
+	bOn_path			: BOOL := FALSE;
+	bIn_home			: BOOL := FALSE;
+	bRC_ready			: BOOL := FALSE;
+	bAlarm_stop			: BOOL := FALSE;
+	bUser_safety		: BOOL := FALSE;
+	bPeri_ready			: BOOL := FALSE;
+	bIO_ActConf			: BOOL := FALSE;
+	bStopmess			: BOOL := FALSE;
+	bPro_act			: BOOL := FALSE;
+	bPG_req				: BOOL := FALSE;
+	bAppl_run			: BOOL := FALSE;
+	bPro_move			: BOOL := FALSE;
+	
+	
+	bGo_home			: BOOL := FALSE;
+	bStandby_pos		: BOOL := FALSE;
+	bBin_pickup			: BOOL := FALSE;
+	bRA_pos1			: BOOL := FALSE;
+	bRA_pos2			: BOOL := FALSE;
+	bRA_pos3			: BOOL := FALSE;
+	bRA_pos4			: BOOL := FALSE;
+	bRA_pos5			: BOOL := FALSE;
+	bRA_pos6			: BOOL := FALSE;
+	bRB_pos7			: BOOL := FALSE;
+	bRB_pos8			: BOOL := FALSE;
+	bRB_pos9			: BOOL := FALSE;
+	bRB_pos10			: BOOL := FALSE;
+	bRB_pos11			: BOOL := FALSE;
+	bRB_pos12			: BOOL := FALSE;
+	bRC_pos13			: BOOL := FALSE;
+	bRC_pos14			: BOOL := FALSE;
+	bRC_pos15			: BOOL := FALSE;
+	bRC_pos16			: BOOL := FALSE;
+	bRC_pos17			: BOOL := FALSE;
+	bRC_pos18			: BOOL := FALSE;
+	bJob_Fail			: BOOL := FALSE;
+	
+	bGo_home_InProcess			: BOOL := FALSE;
+	bStandby_pos_InProcess		: BOOL := FALSE;
+	bBin_pickup_InProcess		: BOOL := FALSE;
+	bRA_pos1_InProcess			: BOOL := FALSE;
+	bRA_pos2_InProcess			: BOOL := FALSE;
+	bRA_pos3_InProcess			: BOOL := FALSE;
+	bRA_pos4_InProcess			: BOOL := FALSE;
+	bRA_pos5_InProcess			: BOOL := FALSE;
+	bRA_pos6_InProcess			: BOOL := FALSE;
+	bRb_pos7_InProcess			: BOOL := FALSE;
+	bRB_pos8_InProcess			: BOOL := FALSE;
+	bRB_pos9_InProcess			: BOOL := FALSE;
+	bRB_pos10_InProcess			: BOOL := FALSE;
+	bRB_pos11_InProcess			: BOOL := FALSE;
+	bRB_pos12_InProcess			: BOOL := FALSE;
+	bRC_pos13_InProcess			: BOOL := FALSE;
+	bRC_pos14_InProcess			: BOOL := FALSE;
+	bRC_pos15_InProcess			: BOOL := FALSE;
+	bRC_pos16_InProcess			: BOOL := FALSE;
+	bRC_pos17_InProcess			: BOOL := FALSE;
+	bRC_pos18_InProcess			: BOOL := FALSE;
+	
+// ================================================  kuka robot data
+dKUKA_axis_a1	: LREAL;
+dKUKA_axis_a2	: LREAL;
+dKUKA_axis_a3	: LREAL;
+dKUKA_axis_a4	: LREAL;
+dKUKA_axis_a5	: LREAL;
+dKUKA_axis_a6	: LREAL;
+
+dKUKA_curr_a1	: LREAL;
+dKUKA_curr_a2	: LREAL;
+dKUKA_curr_a3	: LREAL;
+dKUKA_curr_a4	: LREAL;
+dKUKA_curr_a5	: LREAL;
+dKUKA_curr_a6	: LREAL;
+
+dKUKA_temp_a1	: LREAL;
+dKUKA_temp_a2	: LREAL;
+dKUKA_temp_a3	: LREAL;
+dKUKA_temp_a4	: LREAL;
+dKUKA_temp_a5	: LREAL;
+dKUKA_temp_a6	: LREAL;
+
+
+
+	
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

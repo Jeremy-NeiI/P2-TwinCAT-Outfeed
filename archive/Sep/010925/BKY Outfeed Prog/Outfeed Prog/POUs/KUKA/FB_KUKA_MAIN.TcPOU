@@ -1,0 +1,603 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="FB_KUKA_MAIN" Id="{e8ab190c-a631-4882-8a93-6516c2fdb37c}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_KUKA_MAIN
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+		JobRun 			:  BOOL := FALSE;
+		bResetOUT		: BOOL := FALSE;
+		bJob_InProcess	: BOOL := FALSE;
+		iRackLocation: INT;
+		Timer1			:	TON;
+		
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[//If Soft EStop is pressed, turn off 1027 ~ 1034
+IF IO_KUKA.KR_Estop OR NOT IO_control.bEstop OR IO_KUKA.bAlarm_stop = FALSE THEN		
+	IO_control.bMove_enable := IO_control.bDrive_off := IO_control.bIO_Act := IO_control.bExt_start:=
+	IO_control.bConf_msg := IO_control.bDrive_on := IO_HMI.bMove_enable := IO_HMI.bDrive_off := IO_HMI.bIO_Act := IO_HMI.bExt_start := IO_HMI.bConf_msg := IO_HMI.bDrive_on := FALSE;
+END_IF
+
+//Idle monitor all prog byte x running 	
+IF IO_KUKA.PLC_I_D1 = 1 AND IO_KUKA.PLC_I_D2 = 0 THEN
+	IO_KUKA.Idle := TRUE;
+ELSE
+	IO_KUKA.Idle := FALSE;
+END_IF
+
+//Online monitor T!/EXT mode
+IF IO_KUKA.bEXT_mode THEN
+	IO_KUKA.KROnline := TRUE;
+	//IO.sKUKA_Online_val := '1';
+ELSE
+	IO_KUKA.KROnline := FALSE;
+	//IO.sKUKA_Online_val := '0';
+END_IF
+
+//KUKA standby (ext mode) ---pro_act monitoring
+IF IO_KUKA.bPro_act THEN
+	IO_KUKA.KR_OnStandby := TRUE;
+ELSE
+	IO_KUKA.KR_OnStandby := FALSE;
+END_IF
+
+
+Timer1(IN:= IO_KUKA.bBin_pickup_InProcess  , PT:= T#5S);
+
+IF IO_KUKA.KR_OnStandby AND IO_Conveyor.bKUKA_Job_Start THEN
+	CASE IO.iRackLocation OF
+		
+		//initilize
+		0:	JobRun := FALSE;
+			IO_Conveyor.bPickup_Done := FALSE ;
+			//IO_Conveyor.bKUKA_Job_Start := FALSE;
+		
+			
+	(*================================ RackA : Pos1 =======================================*)	
+		//203
+		1:	IF NOT JobRun THEN
+				IO_control.bRA_pos1 := TRUE;
+			END_IF
+		
+			IF IO_KUKA.bBin_pickup_InProcess = TRUE THEN
+				JobRun := TRUE;
+//				IF Timer1.Q THEN
+//					bResetOUT := TRUE;
+//				END_IF
+			END_IF
+			
+			IF JobRun THEN
+				IF IO_KUKA.bBin_pickup_InProcess = FALSE THEN
+					IO_Conveyor.bPickup_Done := TRUE;
+					bResetOUT := TRUE;
+					IF IO_KUKA.bRA_pos1_InProcess = FALSE THEN
+						IO_Conveyor.bKUKA_Job_Done := TRUE;
+						IO.iRackLocation := 0;
+					END_IF
+				END_IF
+			END_IF
+	
+	
+	(*================================ RackA : Pos2 =======================================*)			
+		2:	IF NOT JobRun THEN
+				IO_control.bRA_pos2 := TRUE;
+			END_IF
+		
+			IF IO_KUKA.bBin_pickup_InProcess = TRUE THEN
+				JobRun := TRUE;
+//				IF Timer1.Q THEN
+//					bResetOUT := TRUE;
+//				END_IF
+			END_IF
+			
+			IF JobRun THEN
+				IF IO_KUKA.bBin_pickup_InProcess = FALSE THEN
+					IO_Conveyor.bPickup_Done := TRUE;
+					bResetOUT := TRUE;
+					IF IO_KUKA.bRA_pos2_InProcess = FALSE THEN
+						IO_Conveyor.bKUKA_Job_Done := TRUE;
+						IO.iRackLocation := 0;
+					END_IF
+				END_IF
+			END_IF
+	
+
+	(*================================ RackA : Pos3 =======================================*)			
+		3:	IF NOT JobRun THEN
+				IO_control.bRA_pos3 := TRUE;
+			END_IF
+		
+			IF IO_KUKA.bBin_pickup_InProcess = TRUE THEN
+				JobRun := TRUE;
+				//IO_control.bRA_pos3 := FALSE;
+			END_IF
+			
+			IF JobRun THEN
+				IF IO_KUKA.bBin_pickup_InProcess = FALSE THEN
+					IO_Conveyor.bPickup_Done := TRUE;
+					bResetOUT := TRUE;
+					IF IO_KUKA.bRA_pos3_InProcess = FALSE THEN
+						IO_Conveyor.bKUKA_Job_Done := TRUE;
+						IO.iRackLocation := 0;
+					END_IF
+				END_IF
+			END_IF
+	
+	
+	(*================================ RackA : Pos4 =======================================*)				
+		4:	IF NOT JobRun THEN
+				IO_control.bRA_pos4 := TRUE;
+			END_IF
+		
+			IF IO_KUKA.bBin_pickup_InProcess = TRUE THEN
+				JobRun := TRUE;
+				//IO_control.bRA_pos4 := FALSE;
+			END_IF
+			
+			IF JobRun THEN
+				IF IO_KUKA.bBin_pickup_InProcess = FALSE THEN
+					IO_Conveyor.bPickup_Done := TRUE;
+					bResetOUT := TRUE;
+					IF IO_KUKA.bRA_pos4_InProcess = FALSE THEN
+						IO_Conveyor.bKUKA_Job_Done := TRUE;
+						IO.iRackLocation := 0;
+					END_IF
+				END_IF
+			END_IF
+	
+
+	(*================================ RackA : Pos5 =======================================*)			
+		5:	IF NOT JobRun THEN
+				IO_control.bRA_pos5 := TRUE;
+			END_IF
+		
+			IF IO_KUKA.bBin_pickup_InProcess = TRUE THEN
+				JobRun := TRUE;
+				//IO_control.bRA_pos5 := FALSE;
+			END_IF
+			
+			IF JobRun THEN
+				IF IO_KUKA.bBin_pickup_InProcess = FALSE THEN
+					IO_Conveyor.bPickup_Done := TRUE;
+					bResetOUT := TRUE;
+					IF IO_KUKA.bRA_pos5_InProcess = FALSE THEN
+						IO_Conveyor.bKUKA_Job_Done := TRUE;
+						IO.iRackLocation := 0;
+					END_IF
+				END_IF
+			END_IF
+	
+
+	(*================================ RackA : Pos6 =======================================*)				
+		6:	IF NOT JobRun THEN
+				IO_control.bRA_pos6 := TRUE;
+			END_IF
+		
+			IF IO_KUKA.bBin_pickup_InProcess = TRUE THEN
+				JobRun := TRUE;
+				//IO_control.bRA_pos6 := FALSE;
+			END_IF
+			
+			IF JobRun THEN
+				IF IO_KUKA.bBin_pickup_InProcess = FALSE THEN
+					IO_Conveyor.bPickup_Done := TRUE;
+					bResetOUT := TRUE;
+					IF IO_KUKA.bRA_pos6_InProcess = FALSE THEN
+						IO_Conveyor.bKUKA_Job_Done := TRUE;
+						IO.iRackLocation := 0;
+					END_IF
+				END_IF
+			END_IF
+	
+
+	(*================================ RackB : Pos7 =======================================*)						
+		7:	IF NOT JobRun THEN
+				IO_control.bRB_pos7 := TRUE;
+			END_IF
+		
+			IF IO_KUKA.bBin_pickup_InProcess = TRUE THEN
+				JobRun := TRUE;
+				//IO_control.bRB_pos7 := FALSE;
+			END_IF
+			
+			IF JobRun THEN
+				IF IO_KUKA.bBin_pickup_InProcess = FALSE THEN
+					IO_Conveyor.bPickup_Done := TRUE;
+					bResetOUT := TRUE;
+					IF IO_KUKA.bRB_pos7_InProcess = FALSE THEN
+						IO_Conveyor.bKUKA_Job_Done := TRUE;
+						IO.iRackLocation := 0;
+					END_IF
+				END_IF
+			END_IF
+	
+
+	(*================================ RackB : Pos8 =======================================*)		
+		8:	IF NOT JobRun THEN
+				IO_control.bRB_pos8 := TRUE;
+			END_IF
+		
+			IF IO_KUKA.bBin_pickup_InProcess = TRUE THEN
+				JobRun := TRUE;
+				//IO_control.bRB_pos8 := FALSE;
+			END_IF
+			
+			IF JobRun THEN
+				IF IO_KUKA.bBin_pickup_InProcess = FALSE THEN
+					IO_Conveyor.bPickup_Done := TRUE;
+					bResetOUT := TRUE;
+					IF IO_KUKA.bRB_pos8_InProcess = FALSE THEN
+						IO_Conveyor.bKUKA_Job_Done := TRUE;
+						IO.iRackLocation := 0;
+					END_IF
+				END_IF
+			END_IF
+	
+
+	(*================================ RackB : Pos9 =======================================*)			
+		9:	IF NOT JobRun THEN
+				IO_control.bRB_pos9 := TRUE;
+			END_IF
+		
+			IF IO_KUKA.bBin_pickup_InProcess = TRUE THEN
+				JobRun := TRUE;
+			//	IO_control.bRB_pos9 := FALSE;
+			END_IF
+			
+			IF JobRun THEN
+				IF IO_KUKA.bBin_pickup_InProcess = FALSE THEN
+					IO_Conveyor.bPickup_Done := TRUE;
+					bResetOUT := TRUE;
+					IF IO_KUKA.bRB_pos9_InProcess = FALSE THEN
+						IO_Conveyor.bKUKA_Job_Done := TRUE;
+						IO.iRackLocation := 0;
+					END_IF
+				END_IF
+			END_IF
+	
+
+	(*================================ RackB : Pos10 =======================================*)		
+		10:	IF NOT JobRun THEN
+				IO_control.bRB_pos10 := TRUE;
+			END_IF
+		
+			IF IO_KUKA.bBin_pickup_InProcess = TRUE THEN
+				JobRun := TRUE;
+				//IO_control.bRB_pos10 := FALSE;
+			END_IF
+			
+			IF JobRun THEN
+				IF IO_KUKA.bBin_pickup_InProcess = FALSE THEN
+					IO_Conveyor.bPickup_Done := TRUE;
+					bResetOUT := TRUE;
+					IF IO_KUKA.bRB_pos10_InProcess = FALSE THEN
+						IO_Conveyor.bKUKA_Job_Done := TRUE;
+						IO.iRackLocation := 0;
+					END_IF
+				END_IF
+			END_IF
+	
+
+	(*================================ RackB : Pos11 =======================================*)			
+		11:	IF NOT JobRun THEN
+				IO_control.bRB_pos11 := TRUE;
+			END_IF
+		
+			IF IO_KUKA.bBin_pickup_InProcess = TRUE THEN
+				JobRun := TRUE;
+				//IO_control.bRB_pos11 := FALSE;
+			END_IF
+			
+			IF JobRun THEN
+				IF IO_KUKA.bBin_pickup_InProcess = FALSE THEN
+					IO_Conveyor.bPickup_Done := TRUE;
+					bResetOUT := TRUE;
+					IF IO_KUKA.bRB_pos11_InProcess = FALSE THEN
+						IO_Conveyor.bKUKA_Job_Done := TRUE;
+						IO.iRackLocation := 0;
+					END_IF
+				END_IF
+			END_IF
+	
+
+	(*================================ RackB : Pos12 =======================================*)		
+		12:	IF NOT JobRun THEN
+				IO_control.bRB_pos12 := TRUE;
+			END_IF
+		
+			IF IO_KUKA.bBin_pickup_InProcess = TRUE THEN
+				JobRun := TRUE;
+			//	IO_control.bRB_pos12 := FALSE;
+			END_IF
+			
+			IF JobRun THEN
+				IF IO_KUKA.bBin_pickup_InProcess = FALSE THEN
+					IO_Conveyor.bPickup_Done := TRUE;
+					bResetOUT := TRUE;
+					IF IO_KUKA.bRB_pos12_InProcess = FALSE THEN
+						IO_Conveyor.bKUKA_Job_Done := TRUE;
+						IO.iRackLocation := 0;
+					END_IF
+				END_IF
+			END_IF
+	
+
+	(*================================ RackC : Pos13 =======================================*)		
+		13:	IF NOT JobRun THEN
+				IO_control.bRC_pos13 := TRUE;
+			END_IF
+		
+			IF IO_KUKA.bBin_pickup_InProcess = TRUE THEN
+				JobRun := TRUE;
+				//IO_control.bRC_pos13 := FALSE;
+			END_IF
+			
+			IF JobRun THEN
+				IF IO_KUKA.bBin_pickup_InProcess = FALSE THEN
+					IO_Conveyor.bPickup_Done := TRUE;
+					bResetOUT := TRUE;
+					IF IO_KUKA.bRC_pos13_InProcess = FALSE THEN
+						IO_Conveyor.bKUKA_Job_Done := TRUE;
+						IO.iRackLocation := 0;
+					END_IF
+				END_IF
+			END_IF	
+	
+
+	(*================================ RackC : Pos14 =======================================*)		
+		14:	IF NOT JobRun THEN
+				IO_control.bRC_pos14 := TRUE;
+			END_IF
+		
+			IF IO_KUKA.bBin_pickup_InProcess = TRUE THEN
+				JobRun := TRUE;
+				//IO_control.bRC_pos14 := FALSE;
+			END_IF
+			
+			IF JobRun THEN
+				IF IO_KUKA.bBin_pickup_InProcess = FALSE THEN
+					IO_Conveyor.bPickup_Done := TRUE;
+					bResetOUT := TRUE;
+					IF IO_KUKA.bRC_pos14_InProcess = FALSE THEN
+						IO_Conveyor.bKUKA_Job_Done := TRUE;
+						IO.iRackLocation := 0;
+					END_IF
+				END_IF
+			END_IF			
+	
+
+	(*================================ RackC : Pos15 =======================================*)		
+		15:	IF NOT JobRun THEN
+				IO_control.bRC_pos15 := TRUE;
+			END_IF
+		
+			IF IO_KUKA.bBin_pickup_InProcess = TRUE THEN
+				JobRun := TRUE;
+				//IO_control.bRC_pos15 := FALSE;
+			END_IF
+			
+			IF JobRun THEN
+				IF IO_KUKA.bBin_pickup_InProcess = FALSE THEN
+					IO_Conveyor.bPickup_Done := TRUE;
+					bResetOUT := TRUE;
+					IF IO_KUKA.bRC_pos15_InProcess = FALSE THEN
+						IO_Conveyor.bKUKA_Job_Done := TRUE;
+						IO.iRackLocation := 0;
+					END_IF
+				END_IF
+			END_IF	
+
+			
+	(*================================ RackC : Pos16 =======================================*)
+		16:	IF NOT JobRun THEN
+				IO_control.bRC_pos16 := TRUE;
+			END_IF
+		
+			IF IO_KUKA.bBin_pickup_InProcess = TRUE THEN
+				JobRun := TRUE;
+				//IO_control.bRC_pos16 := FALSE;
+			END_IF
+			
+			IF JobRun THEN
+				IF IO_KUKA.bBin_pickup_InProcess = FALSE THEN
+					IO_Conveyor.bPickup_Done := TRUE;
+					bResetOUT := TRUE;
+					IF IO_KUKA.bRC_pos16_InProcess = FALSE THEN
+						IO_Conveyor.bKUKA_Job_Done := TRUE;
+						IO.iRackLocation := 0;
+					END_IF
+				END_IF
+			END_IF	
+			
+	(*================================ RackC : Pos17 =======================================*)
+		17:	IF NOT JobRun THEN
+				IO_control.bRC_pos17 := TRUE;
+			END_IF
+		
+			IF IO_KUKA.bBin_pickup_InProcess = TRUE THEN
+				JobRun := TRUE;
+			//	IO_control.bRC_pos17 := FALSE;
+			END_IF
+			
+			IF JobRun THEN
+				IF IO_KUKA.bBin_pickup_InProcess = FALSE THEN
+					IO_Conveyor.bPickup_Done := TRUE;
+					bResetOUT := TRUE;
+					IF IO_KUKA.bRC_pos17_InProcess = FALSE THEN
+						IO_Conveyor.bKUKA_Job_Done := TRUE;
+						IO.iRackLocation := 0;
+					END_IF
+				END_IF
+			END_IF		
+	
+
+	(*================================ RackC : Pos18 =======================================*)	
+		18:	IF NOT JobRun THEN
+				IO_control.bRC_pos18 := TRUE;
+			END_IF
+		
+			IF IO_KUKA.bBin_pickup_InProcess = TRUE THEN
+				JobRun := TRUE;
+			//	IO_control.bRC_pos18 := FALSE;
+			END_IF
+			
+			IF JobRun THEN
+				IF IO_KUKA.bBin_pickup_InProcess = FALSE THEN
+					IO_Conveyor.bPickup_Done := TRUE;
+					bResetOUT := TRUE;
+					IF IO_KUKA.bRC_pos18_InProcess = FALSE THEN
+						IO_Conveyor.bKUKA_Job_Done := TRUE;
+						IO.iRackLocation := 0;
+					END_IF
+				END_IF
+			END_IF	
+
+	END_CASE
+END_IF
+
+IF bResetOUT THEN
+	//IO_KUKA.PLC_O_D1 :=  1;
+	IO_control.bRA_pos1 := IO_control.bRA_pos2 := IO_control.bRA_pos3 := IO_control.bRA_pos4 := IO_control.bRA_pos5 := IO_control.bRA_pos6 := IO_control.bRB_pos7 := IO_control.bRB_pos8 := IO_control.bRB_pos9 := IO_control.bRB_pos10 := IO_control.bRB_pos11 := IO_control.bRB_pos12 := IO_control.bRC_pos13 := IO_control.bRC_pos14 := IO_control.bRC_pos15 := IO_control.bRC_pos16 := IO_control.bRC_pos17 := IO_control.bRC_pos18 := FALSE;
+	bResetOUT := FALSE;
+END_IF
+]]></ST>
+    </Implementation>
+    <LineIds Name="FB_KUKA_MAIN">
+      <LineId Id="10" Count="15" />
+      <LineId Id="659" Count="0" />
+      <LineId Id="26" Count="1" />
+      <LineId Id="660" Count="0" />
+      <LineId Id="28" Count="7" />
+      <LineId Id="780" Count="0" />
+      <LineId Id="762" Count="0" />
+      <LineId Id="36" Count="3" />
+      <LineId Id="54" Count="0" />
+      <LineId Id="158" Count="0" />
+      <LineId Id="156" Count="0" />
+      <LineId Id="263" Count="0" />
+      <LineId Id="157" Count="0" />
+      <LineId Id="275" Count="0" />
+      <LineId Id="363" Count="0" />
+      <LineId Id="357" Count="0" />
+      <LineId Id="55" Count="0" />
+      <LineId Id="125" Count="0" />
+      <LineId Id="259" Count="1" />
+      <LineId Id="258" Count="0" />
+      <LineId Id="232" Count="0" />
+      <LineId Id="242" Count="0" />
+      <LineId Id="784" Count="0" />
+      <LineId Id="261" Count="0" />
+      <LineId Id="785" Count="0" />
+      <LineId Id="239" Count="0" />
+      <LineId Id="247" Count="0" />
+      <LineId Id="256" Count="0" />
+      <LineId Id="249" Count="1" />
+      <LineId Id="776" Count="0" />
+      <LineId Id="783" Count="0" />
+      <LineId Id="253" Count="2" />
+      <LineId Id="248" Count="0" />
+      <LineId Id="257" Count="0" />
+      <LineId Id="358" Count="0" />
+      <LineId Id="362" Count="0" />
+      <LineId Id="360" Count="0" />
+      <LineId Id="303" Count="5" />
+      <LineId Id="786" Count="1" />
+      <LineId Id="309" Count="11" />
+      <LineId Id="41" Count="0" />
+      <LineId Id="103" Count="0" />
+      <LineId Id="365" Count="0" />
+      <LineId Id="364" Count="0" />
+      <LineId Id="321" Count="17" />
+      <LineId Id="104" Count="0" />
+      <LineId Id="73" Count="0" />
+      <LineId Id="366" Count="1" />
+      <LineId Id="339" Count="11" />
+      <LineId Id="747" Count="0" />
+      <LineId Id="352" Count="4" />
+      <LineId Id="106" Count="0" />
+      <LineId Id="76" Count="0" />
+      <LineId Id="369" Count="0" />
+      <LineId Id="368" Count="0" />
+      <LineId Id="396" Count="17" />
+      <LineId Id="107" Count="0" />
+      <LineId Id="79" Count="0" />
+      <LineId Id="371" Count="0" />
+      <LineId Id="370" Count="0" />
+      <LineId Id="414" Count="17" />
+      <LineId Id="108" Count="0" />
+      <LineId Id="82" Count="0" />
+      <LineId Id="373" Count="0" />
+      <LineId Id="372" Count="0" />
+      <LineId Id="432" Count="17" />
+      <LineId Id="85" Count="0" />
+      <LineId Id="110" Count="0" />
+      <LineId Id="375" Count="0" />
+      <LineId Id="374" Count="0" />
+      <LineId Id="450" Count="17" />
+      <LineId Id="88" Count="0" />
+      <LineId Id="111" Count="0" />
+      <LineId Id="377" Count="0" />
+      <LineId Id="376" Count="0" />
+      <LineId Id="468" Count="17" />
+      <LineId Id="91" Count="0" />
+      <LineId Id="112" Count="0" />
+      <LineId Id="379" Count="0" />
+      <LineId Id="378" Count="0" />
+      <LineId Id="486" Count="17" />
+      <LineId Id="94" Count="0" />
+      <LineId Id="113" Count="0" />
+      <LineId Id="381" Count="0" />
+      <LineId Id="380" Count="0" />
+      <LineId Id="504" Count="17" />
+      <LineId Id="97" Count="0" />
+      <LineId Id="114" Count="0" />
+      <LineId Id="383" Count="0" />
+      <LineId Id="382" Count="0" />
+      <LineId Id="522" Count="17" />
+      <LineId Id="100" Count="0" />
+      <LineId Id="115" Count="0" />
+      <LineId Id="385" Count="0" />
+      <LineId Id="384" Count="0" />
+      <LineId Id="540" Count="17" />
+      <LineId Id="116" Count="0" />
+      <LineId Id="166" Count="0" />
+      <LineId Id="387" Count="0" />
+      <LineId Id="386" Count="0" />
+      <LineId Id="558" Count="17" />
+      <LineId Id="167" Count="0" />
+      <LineId Id="170" Count="0" />
+      <LineId Id="389" Count="0" />
+      <LineId Id="388" Count="0" />
+      <LineId Id="576" Count="17" />
+      <LineId Id="171" Count="0" />
+      <LineId Id="390" Count="0" />
+      <LineId Id="176" Count="0" />
+      <LineId Id="391" Count="0" />
+      <LineId Id="594" Count="17" />
+      <LineId Id="392" Count="0" />
+      <LineId Id="179" Count="0" />
+      <LineId Id="393" Count="0" />
+      <LineId Id="612" Count="17" />
+      <LineId Id="174" Count="0" />
+      <LineId Id="183" Count="0" />
+      <LineId Id="395" Count="0" />
+      <LineId Id="394" Count="0" />
+      <LineId Id="630" Count="17" />
+      <LineId Id="188" Count="0" />
+      <LineId Id="122" Count="0" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="53" Count="0" />
+      <LineId Id="132" Count="0" />
+      <LineId Id="58" Count="0" />
+      <LineId Id="133" Count="0" />
+      <LineId Id="788" Count="0" />
+      <LineId Id="138" Count="0" />
+      <LineId Id="134" Count="0" />
+      <LineId Id="57" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

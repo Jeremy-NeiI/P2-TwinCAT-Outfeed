@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <GVL Name="IO_Conveyor" Id="{aee011bb-1b23-4230-af77-022564fbd759}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+VAR_GLOBAL
+
+//conveyor open check
+bExit1_IsOpen			:	BOOL := TRUE;
+bExit2_IsOpen			:	BOOL := TRUE;
+bExit3_IsOpen			:	BOOL := TRUE;
+bExit4_IsOpen			:	BOOL := TRUE;
+
+//conv1 status
+Conv1_Done				:   BOOL := FALSE;
+Bin_At_Exit_1			:	BOOL := FALSE;
+bMotor1_State			:	BOOL := FALSE;
+ReCyl1_Home				:	BOOL := FALSE;
+ReCyl1_Work				:	BOOL := FALSE;
+bReCylinder_At_Work		:	BOOL := FALSE;
+bReceiving_State_Open	:	BOOL := FALSE;
+bStart_Receiving		:	BOOL := FALSE;
+	
+//JOB STATUS
+bDropTask_Start			:	BOOL := FALSE;
+bDropTask_InProcess		:	BOOL := FALSE;
+bDropTask_Complete		:	BOOL := FALSE;
+bDropOff_Start			:	BOOL := FALSE;
+bDropOff_InProcess		:	BOOL := FALSE;
+bDropOff_Complete		:	BOOL := FALSE;
+bReceiving_InProcess	:	BOOL := FALSE;
+bReceiving_Complete		:	BOOL := FALSE;
+
+//conv2 status
+Conv2_Done				:   BOOL := FALSE;
+bMotor2_State			:	BOOL := FALSE;
+Bin_At_Exit_2			:	BOOL := FALSE;
+
+//conv3 status
+Conv3_Done				:   BOOL := FALSE;
+Conv3_IsOpen			:	BOOL := FALSE;
+bMotor3_State			:	BOOL := FALSE;
+
+//conv4 status
+Conv4_Done				:   BOOL := FALSE;
+Conv4_IsOpen			:	BOOL := FALSE;
+Bin_At_Exit_4			:	BOOL := FALSE;
+bMotor4_State			:	BOOL := FALSE;
+SendID_InProcess		:	BOOL := FALSE;
+bEnd_InProcess			:	BOOL := FALSE;
+
+//KEYENCE  scanner status
+bScan_Done				:	BOOL := FALSE;
+bScan_Complete			:	BOOL := FALSE;
+bScan_Failed			:	BOOL := FALSE;
+bScanner_Process_Complete	:	BOOL := FALSE;
+
+bScan_ERROR				:	BOOL := FALSE;
+bScan_Start				:	BOOL := FALSE;	
+bScan_Job_Done			:	BOOL := FALSE;
+bBinID_Sent				:	BOOL := FALSE;
+bSendID_Complete		:	BOOL := FALSE;
+
+//cyl status
+bAlCyl_at_Home			:	BOOL;
+bEndCyl_at_Home			:	BOOL;
+Align_To_Work			:	BOOL;
+Align_To_Home			:	BOOL;
+bAlCyl_at_Work			:	BOOL;
+bPopup_To_Work			:	BOOL;
+bPopup_To_Home			:	BOOL;
+
+//KUKA JOB STATUS
+bKUKA_Rack_Request		:	BOOL := FALSE;
+bRack_Loc_Received		:	BOOL := FALSE;
+bPickup_Done			: 	BOOL := FALSE;
+bKUKA_Job_Start			: 	BOOL := FALSE;
+bKUKA_InProcess			: 	BOOL := FALSE;
+bKUKA_Job_Done			:	BOOL := FALSE;
+sKUKA_RackLocation		:	STRING;
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

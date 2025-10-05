@@ -1,0 +1,153 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="FB_Conv1" Id="{69996449-2c84-4955-a424-7766fe39a2d2}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK PUBLIC FB_Conv1
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+END_VAR
+VAR
+	Timer1				:	TON	;
+	x					: INT :=0;
+	Set_Motor			:	BOOL;
+	Reset_Motor			:	BOOL;	
+	iSTEP				:	INT;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[CASE iSTEP OF 
+	
+	// ================================================  Conveyor Motor n Re Cyl Init
+	0:	IF IO.bConv_Ready AND IO_control.bEstop THEN
+			IO_control.bMotor1 := FALSE;
+			IO_control.bReCyl_Ext := TRUE ;
+			IO_control.bReCyl_Ret := FALSE ;
+			IF IO.bReCyl1_State_Extend THEN
+				iSTEP := 2 ;
+			END_IF
+		END_IF
+
+	// ================================================  wait for bin,,,.... fbdroptask/fbdropoff will run in d background	
+	2:	IF IO_Conveyor.bReceiving_Complete AND IO.bConv1_In THEN
+			IF IO_Conveyor.bExit1_IsOpen THEN
+				iSTEP := iSTEP + 1 ;
+			END_IF	
+		END_IF
+	
+	// ================================================  Receiving cyl to retract after receiving complete
+	3:	IO_Conveyor.bExit1_IsOpen := FALSE;
+		IO_control.bReCyl_Ext := FALSE ;
+		IO_control.bReCyl_Ret := TRUE ;
+		IO_Conveyor.bReceiving_Complete := FALSE;
+		IF IO.bReCyl1_State_Retract THEN
+			IO.bPoatman_get := TRUE;
+			IO_Conveyor.bReCylinder_At_Work := FALSE;				
+			iSTEP := iSTEP + 1 ;
+		ELSE
+			IO_Conveyor.bReCylinder_At_Work := TRUE;
+		END_IF
+	
+	// ================================================  motor start after re cyl retract	
+	4:	Timer1(IN:= NOT IO_Conveyor.bReCylinder_At_Work, PT:=T#0.1S, Q=> Set_Motor);
+		IO_control.bMotor1 S= Set_Motor;
+		IF Set_Motor THEN
+			IO.bPoatman_get := FALSE;
+			iSTEP := iSTEP + 1 ;
+		END_IF	
+	
+	// ================================================  stop motor1 if conv1_out ON	
+	5: 	IF IO.bConv1_Out THEN
+			IO_control.bReCyl_Ext := TRUE;
+			IO_control.bReCyl_Ret := FALSE;
+			IO_Conveyor.Bin_At_Exit_1 := TRUE;
+			IO_control.bMotor1 R= IO.bConv1_Out;
+			iSTEP := iSTEP + 1;
+		END_IF
+
+	// ================================================  update status for conv1 job done
+	6:	IO_Conveyor.Conv1_Done := TRUE;
+		iSTEP := iSTEP + 1;
+	
+	// ================================================  receive feedback from conv2
+	(*receive reset for conv1 job done*)
+	7:	IF NOT IO_Conveyor.Conv1_Done THEN
+			IO_Conveyor.Bin_At_Exit_1 := FALSE;
+			iSTEP := 0;
+		END_IF							
+END_CASE
+
+IF IO.bManualMode OR IO.bEstop_State THEN
+	IO_Conveyor.Bin_At_Exit_1 := FALSE;
+	IO_Conveyor.Conv1_Done := FALSE;
+	IO_Conveyor.Bin_At_Exit_1 := FALSE;
+	IO.bPoatman_get := FALSE;
+	IO_Conveyor.bReCylinder_At_Work := FALSE;
+	FOR x := 1 TO 8 DO
+		IO.abinID_Set[x] := '';
+	END_FOR
+	iSTEP := 0 ;
+END_IF
+		
+]]></ST>
+    </Implementation>
+    <LineIds Name="FB_Conv1">
+      <LineId Id="137" Count="0" />
+      <LineId Id="497" Count="0" />
+      <LineId Id="245" Count="2" />
+      <LineId Id="610" Count="3" />
+      <LineId Id="609" Count="0" />
+      <LineId Id="244" Count="0" />
+      <LineId Id="558" Count="0" />
+      <LineId Id="551" Count="0" />
+      <LineId Id="142" Count="0" />
+      <LineId Id="571" Count="0" />
+      <LineId Id="143" Count="0" />
+      <LineId Id="572" Count="0" />
+      <LineId Id="147" Count="0" />
+      <LineId Id="182" Count="0" />
+      <LineId Id="638" Count="0" />
+      <LineId Id="184" Count="0" />
+      <LineId Id="596" Count="0" />
+      <LineId Id="185" Count="0" />
+      <LineId Id="706" Count="0" />
+      <LineId Id="186" Count="0" />
+      <LineId Id="659" Count="0" />
+      <LineId Id="187" Count="3" />
+      <LineId Id="192" Count="1" />
+      <LineId Id="639" Count="0" />
+      <LineId Id="195" Count="2" />
+      <LineId Id="688" Count="0" />
+      <LineId Id="198" Count="0" />
+      <LineId Id="201" Count="0" />
+      <LineId Id="489" Count="0" />
+      <LineId Id="640" Count="0" />
+      <LineId Id="204" Count="0" />
+      <LineId Id="206" Count="1" />
+      <LineId Id="490" Count="0" />
+      <LineId Id="428" Count="0" />
+      <LineId Id="643" Count="0" />
+      <LineId Id="215" Count="0" />
+      <LineId Id="644" Count="0" />
+      <LineId Id="383" Count="0" />
+      <LineId Id="430" Count="0" />
+      <LineId Id="432" Count="0" />
+      <LineId Id="431" Count="0" />
+      <LineId Id="645" Count="0" />
+      <LineId Id="491" Count="0" />
+      <LineId Id="395" Count="0" />
+      <LineId Id="524" Count="0" />
+      <LineId Id="396" Count="0" />
+      <LineId Id="384" Count="0" />
+      <LineId Id="232" Count="0" />
+      <LineId Id="493" Count="1" />
+      <LineId Id="647" Count="0" />
+      <LineId Id="672" Count="0" />
+      <LineId Id="674" Count="2" />
+      <LineId Id="690" Count="0" />
+      <LineId Id="692" Count="1" />
+      <LineId Id="495" Count="1" />
+      <LineId Id="492" Count="0" />
+      <LineId Id="9" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

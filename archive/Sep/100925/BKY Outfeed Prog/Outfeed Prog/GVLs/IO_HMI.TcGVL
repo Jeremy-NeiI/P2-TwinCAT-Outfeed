@@ -1,0 +1,94 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <GVL Name="IO_HMI" Id="{6463188d-3f6f-429d-aea7-77fcd2bb2762}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+VAR_GLOBAL
+	
+	sConv1_BinID	: STRING;
+	sConv2_BinID	: STRING;
+	sConv3_BinID	: STRING;
+	sConv4_BinID	: STRING;
+	aBinID	:	ARRAY [1..18] OF STRING;
+	
+// ================================================  input HMI variable
+	bEstop	: BOOL := TRUE;
+	bStart	: BOOL := FALSE;
+	bStop	: BOOL := FALSE;
+	bReset	: BOOL := FALSE;
+	bManualToggle	: BOOL := FALSE;
+
+// ================================================  output HMI variable	
+	bRedlight	: BOOL := FALSE;
+	bYellowlight	: BOOL := FALSE;
+	bGreenlight	: BOOL := FALSE;
+	bBuzzer	: BOOL := FALSE;
+	bMotor1	: BOOL := FALSE;
+	bMotor2	: BOOL := FALSE;
+	bMotor3	: BOOL := FALSE;
+	bMotor4	: BOOL := FALSE;
+	bRecyl_ext	: BOOL := FALSE;
+	bRecyl_ret	: BOOL := FALSE;
+	bEndcyl_ext	: BOOL := FALSE;
+	bEndcyl_ret	: BOOL := FALSE;
+	bAlcyl_ext	: BOOL := FALSE;
+	bAlcyl_ret	: BOOL := FALSE;
+	bScanner_PwrCtrl	: BOOL := FALSE;
+	
+// ================================================  kuka HMI variable	
+	(* kuka input *)
+	bMove_enable		: BOOL := FALSE;
+	bDrive_off			: BOOL := FALSE;
+	bIO_Act				: BOOL := FALSE;
+	bExt_start			: BOOL := FALSE;
+	bConf_msg			: BOOL := FALSE;
+	bDrive_on			: BOOL := FALSE;
+	bPG_fbit			: BOOL := FALSE;
+	bPG_valid			: BOOL := FALSE;
+	bPG_parity			: BOOL := FALSE;
+	
+	(* kuka output *)
+	bT1_mode			: BOOL := FALSE;
+	bT2_mode			: BOOL := FALSE;
+	bAUT_mode			: BOOL := FALSE;
+	bEXT_mode			: BOOL := FALSE;
+	bOn_path			: BOOL := FALSE;
+	bIn_home			: BOOL := FALSE;
+	bRC_ready			: BOOL := FALSE;
+	bAlarm_stop			: BOOL := FALSE;
+	bUser_safety		: BOOL := FALSE;
+	bPeri_ready			: BOOL := FALSE;
+	bIO_ActConf			: BOOL := FALSE;
+	bStopmess			: BOOL := FALSE;
+	bPro_act			: BOOL := FALSE;
+	bPG_req				: BOOL := FALSE;
+	bAppl_run			: BOOL := FALSE;
+	bPro_move			: BOOL := FALSE;
+	
+	bGo_home			: BOOL := FALSE;
+	bStandby_pos		: BOOL := FALSE;
+	bBin_pickup			: BOOL := FALSE;
+	bRA_pos1			: BOOL := FALSE;
+	bRA_pos2			: BOOL := FALSE;
+	bRA_pos3			: BOOL := FALSE;
+	bRA_pos4			: BOOL := FALSE;
+	bRA_pos5			: BOOL := FALSE;
+	bRA_pos6			: BOOL := FALSE;
+	bRB_pos7			: BOOL := FALSE;
+	bRB_pos8			: BOOL := FALSE;
+	bRB_pos9			: BOOL := FALSE;
+	bRB_pos10			: BOOL := FALSE;
+	bRB_pos11			: BOOL := FALSE;
+	bRB_pos12			: BOOL := FALSE;
+	bRC_pos13			: BOOL := FALSE;
+	bRC_pos14			: BOOL := FALSE;
+	bRC_pos15			: BOOL := FALSE;
+	bRC_pos16			: BOOL := FALSE;
+	bRC_pos17			: BOOL := FALSE;
+	bRC_pos18			: BOOL := FALSE;
+	bJob_Fail			: BOOL := FALSE;
+	
+	
+	
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

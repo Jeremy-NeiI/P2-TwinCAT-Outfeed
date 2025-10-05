@@ -1,0 +1,415 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="DIGI_Main" Id="{bc02980f-fea0-4e7e-8235-d2e7da73e07d}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM DIGI_Main
+VAR
+
+//	IPAdress		: STRING 	:= '192.168.1.132';
+//	Port			: UINT		:= 5000;
+	IPAddress		: STRING 	:= '10.0.120.103';
+	Port			: UINT		:= 8080;
+	UpdatePeriod	: TIME		:= T#60S;
+	Timer 			: BOOL;
+	
+	API_MSG			: STRING(3500);
+	HttpSend		: BOOL := FALSE;
+	bSuccess		: BOOL;
+	bError			: BOOL;
+	
+	fb_TimeStamp	: FB_UpdateTimeStamp_1;
+	fb_httppost		: FB_EventHTTP_Post;
+	fbTON 	: TON;
+	fbTOFF 	: TON;
+	Rise1	: R_TRIG;
+	
+	fbHttpProcess	: FB_IotHttpClient :=(	sHostName			:= IPAddress,
+								  			bKeepAlive			:= TRUE, 
+											tConnectionTimeout	:= T#10S);
+	enabler	: BOOL;	
+	
+	//rising edges
+	rHome	:	R_TRIG;
+	rToWait	:	R_TRIG;
+	fToWait	:	F_TRIG;
+	rPick	:	R_TRIG;
+	fPick	:	F_TRIG;
+	fPlace01	:	F_TRIG;
+	fPlace02	:	F_TRIG;
+	fPlace03	:	F_TRIG;
+	fPlace04	:	F_TRIG;
+	fPlace05	:	F_TRIG;
+	fPlace06	:	F_TRIG;
+	fPlace07	:	F_TRIG;
+	fPlace08	:	F_TRIG;
+	fPlace09	:	F_TRIG;
+	fPlace10	:	F_TRIG;
+	fPlace11	:	F_TRIG;
+	fPlace12	:	F_TRIG;
+	fPlace13	:	F_TRIG;
+	fPlace14	:	F_TRIG;
+	fPlace15	:	F_TRIG;
+	fPlace16	:	F_TRIG;
+	fPlace17	:	F_TRIG;
+	fPlace18	:	F_TRIG;
+	
+//	rHome	:	R_TRIG;
+//	rToWait	:	R_TRIG;
+//	rPick	:	R_TRIG;
+//	fPlace01	:	F_TRIG;
+//	rPlace02	:	R_TRIG;
+//	rPlace03	:	R_TRIG;
+//	rPlace04	:	R_TRIG;
+//	rPlace05	:	R_TRIG;
+//	rPlace06	:	R_TRIG;
+//	rPlace07	:	R_TRIG;
+//	rPlace08	:	R_TRIG;
+//	rPlace09	:	R_TRIG;
+//	rPlace10	:	R_TRIG;
+//	rPlace11	:	R_TRIG;
+//	rPlace12	:	R_TRIG;
+//	rPlace13	:	R_TRIG;
+//	rPlace14	:	R_TRIG;
+//	rPlace15	:	R_TRIG;
+//	rPlace16	:	R_TRIG;
+//	rPlace17	:	R_TRIG;
+//	rPlace18	:	R_TRIG;
+	
+	
+	
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+IF NOT fbHttpProcess.bConfigured THEN 
+	fbHttpProcess.nHostPort 				:= Port;
+	fbHttpProcess.stTLS.bNoServerCertCheck 	:= FALSE;
+END_IF
+	
+fb_TimeStamp();
+
+rHome(CLK := IO_KUKA.bGo_home_InProcess);
+rToWait(CLK := IO_KUKA.bStandby_pos_InProcess);
+//fToWait(CLK := IO_KUKA.bRA_pos1_InProcess OR IO_KUKA.bRA_pos2_InProcess );
+rPick(CLK := IO_KUKA.bBin_pickup_InProcess);
+
+
+fPlace01(CLK := IO_control.bRA_pos1);
+fPlace02(CLK := IO_control.bRA_pos2);
+fPlace03(CLK := IO_control.bRA_pos3);
+fPlace04(CLK := IO_control.bRA_pos4);
+fPlace05(CLK := IO_control.bRA_pos5);
+fPlace06(CLK := IO_control.bRA_pos6);
+fPlace07(CLK := IO_control.bRB_pos7);
+fPlace08(CLK := IO_control.bRB_pos8);
+fPlace09(CLK := IO_control.bRB_pos9);
+fPlace10(CLK := IO_control.bRB_pos10);
+fPlace11(CLK := IO_control.bRB_pos11);
+fPlace12(CLK := IO_control.bRB_pos12);
+fPlace13(CLK := IO_control.bRC_pos13);
+fPlace14(CLK := IO_control.bRC_pos14);
+fPlace15(CLK := IO_control.bRC_pos15);
+fPlace16(CLK := IO_control.bRC_pos16);
+fPlace17(CLK := IO_control.bRC_pos17);
+fPlace18(CLK := IO_control.bRC_pos18);
+
+Rise1(CLK:= enabler);
+
+IF fb_TimeStamp.timeValid THEN
+	IF Rise1.Q THEN
+		IO.sActionkey := 'Testing';
+		IO.iActionval := 1;
+		DIGIIOT_UPDATE(SystemTime := fb_TimeStamp.timestampSeconds);
+		HttpSend := TRUE;
+	END_IF
+	
+//	IF rHome.Q THEN
+//		IO.sActionkey := 'Home';
+//		IO.iActionval := 1;
+//		DIGIIOT_UPDATE(SystemTime := fb_TimeStamp.timestampSeconds);
+//		HttpSend := TRUE;
+//	END_IF
+	
+	IF rToWait.Q THEN
+		IO.sActionkey := 'ToWait';
+		IO.iActionval := 1;
+		DIGIIOT_UPDATE(SystemTime := fb_TimeStamp.timestampSeconds);
+		HttpSend := TRUE;
+	END_IF
+	
+	IF rPick.Q THEN
+		IO.sActionkey := 'BinPickUp';
+		IO.iActionval := 1;
+		DIGIIOT_UPDATE(SystemTime := fb_TimeStamp.timestampSeconds);
+		HttpSend := TRUE;
+	END_IF
+	
+	IF fPlace01.Q THEN
+		IO.sActionkey := 'BinPlace_01';
+		IO.iActionval := 1;
+		DIGIIOT_UPDATE(SystemTime := fb_TimeStamp.timestampSeconds);
+		HttpSend := TRUE;
+	END_IF
+	
+	IF fPlace02.Q THEN
+		IO.sActionkey := 'BinPlace_02';
+		IO.iActionval := 1;
+		DIGIIOT_UPDATE(SystemTime := fb_TimeStamp.timestampSeconds);
+		HttpSend := TRUE;
+	END_IF
+	
+	IF fPlace03.Q THEN
+		IO.sActionkey := 'BinPlace_03';
+		IO.iActionval := 1;
+		DIGIIOT_UPDATE(SystemTime := fb_TimeStamp.timestampSeconds);
+		HttpSend := TRUE;
+	END_IF
+	
+	IF fPlace04.Q THEN
+		IO.sActionkey := 'BinPlace_04';
+		IO.iActionval := 1;
+		DIGIIOT_UPDATE(SystemTime := fb_TimeStamp.timestampSeconds);
+		HttpSend := TRUE;
+	END_IF
+	
+	IF fPlace05.Q THEN
+		IO.sActionkey := 'BinPlace_05';
+		IO.iActionval := 1;
+		DIGIIOT_UPDATE(SystemTime := fb_TimeStamp.timestampSeconds);
+		HttpSend := TRUE;
+	END_IF
+	
+	IF fPlace06.Q THEN
+		IO.sActionkey := 'BinPlace_06';
+		IO.iActionval := 1;
+		DIGIIOT_UPDATE(SystemTime := fb_TimeStamp.timestampSeconds);
+		HttpSend := TRUE;
+	END_IF
+	
+	IF fPlace07.Q THEN
+		IO.sActionkey := 'BinPlace_07';
+		IO.iActionval := 1;
+		DIGIIOT_UPDATE(SystemTime := fb_TimeStamp.timestampSeconds);
+		HttpSend := TRUE;
+	END_IF
+	
+	IF fPlace08.Q THEN
+		IO.sActionkey := 'BinPlace_08';
+		IO.iActionval := 1;
+		DIGIIOT_UPDATE(SystemTime := fb_TimeStamp.timestampSeconds);
+		HttpSend := TRUE;
+	END_IF
+	
+	IF fPlace09.Q THEN
+		IO.sActionkey := 'BinPlace_09';
+		IO.iActionval := 1;
+		DIGIIOT_UPDATE(SystemTime := fb_TimeStamp.timestampSeconds);
+		HttpSend := TRUE;
+	END_IF
+	
+	IF fPlace10.Q THEN
+		IO.sActionkey := 'BinPlace_10';
+		IO.iActionval := 1;
+		DIGIIOT_UPDATE(SystemTime := fb_TimeStamp.timestampSeconds);
+		HttpSend := TRUE;
+	END_IF
+	
+	IF fPlace11.Q THEN
+		IO.sActionkey := 'BinPlace_11';
+		IO.iActionval := 1;
+		DIGIIOT_UPDATE(SystemTime := fb_TimeStamp.timestampSeconds);
+		HttpSend := TRUE;
+	END_IF
+	
+	IF fPlace12.Q THEN
+		IO.sActionkey := 'BinPlace_12';
+		IO.iActionval := 1;
+		DIGIIOT_UPDATE(SystemTime := fb_TimeStamp.timestampSeconds);
+		HttpSend := TRUE;
+	END_IF
+	
+	IF fPlace13.Q THEN
+		IO.sActionkey := 'BinPlace_13';
+		IO.iActionval := 1;
+		DIGIIOT_UPDATE(SystemTime := fb_TimeStamp.timestampSeconds);
+		HttpSend := TRUE;
+	END_IF
+	
+	IF fPlace14.Q THEN
+		IO.sActionkey := 'BinPlace_14';
+		IO.iActionval := 1;
+		DIGIIOT_UPDATE(SystemTime := fb_TimeStamp.timestampSeconds);
+		HttpSend := TRUE;
+	END_IF
+	
+	IF fPlace15.Q THEN
+		IO.sActionkey := 'BinPlace_15';
+		IO.iActionval := 1;
+		DIGIIOT_UPDATE(SystemTime := fb_TimeStamp.timestampSeconds);
+		HttpSend := TRUE;
+	END_IF
+	
+	IF fPlace16.Q THEN
+		IO.sActionkey := 'BinPlace_16';
+		IO.iActionval := 1;
+		DIGIIOT_UPDATE(SystemTime := fb_TimeStamp.timestampSeconds);
+		HttpSend := TRUE;
+	END_IF
+	
+	IF fPlace17.Q THEN
+		IO.sActionkey := 'BinPlace_17';
+		IO.iActionval := 1;
+		DIGIIOT_UPDATE(SystemTime := fb_TimeStamp.timestampSeconds);
+		HttpSend := TRUE;
+	END_IF
+	
+	IF fPlace18.Q THEN
+		IO.sActionkey := 'BinPlace_18';
+		IO.iActionval := 1;
+		DIGIIOT_UPDATE(SystemTime := fb_TimeStamp.timestampSeconds);
+		HttpSend := TRUE;
+	END_IF
+	
+	IF fbHttpProcess.bConfigured THEN 
+		fb_httppost( 	bSend		:= HttpSend, 
+						fbClient	:= fbHttpProcess, 
+						API_URI		:= '/upload',
+						API_Msg		:= IO.DIGI_MSG,
+						bSuccess 	=> bSuccess,
+						bError		=> bError );
+						
+		IF fb_httppost.bSuccess OR fb_httppost.bError THEN
+			HttpSend := FALSE;
+		END_IF
+	END_IF 
+	fbHttpProcess.Execute();
+END_IF
+
+
+
+
+
+
+//IF fb_TimeStamp.timeValid THEN
+		
+//	Rise1(CLK:= enabler);
+//	IF Rise1.Q THEN
+//		HttpSend := TRUE;
+//		DIGIIOT_UPDATE(SystemTime := fb_TimeStamp.timestampSeconds);
+//	END_IF
+
+//	IF fbHttpProcess.bConfigured THEN 
+//		fb_httppost( 	bSend		:= HttpSend, 
+//						fbClient	:= fbHttpProcess, 
+//						API_URI		:= '/upload',
+//						API_Msg		:= IO.DIGI_MSG,
+//						bSuccess 	=> bSuccess,
+//						bError		=> bError );
+						
+//		IF fb_httppost.bSuccess OR fb_httppost.bError THEN
+//			HttpSend := FALSE;
+//		END_IF
+//	END_IF 
+//	fbHttpProcess.Execute();
+//END_IF
+]]></ST>
+    </Implementation>
+    <LineIds Name="DIGI_Main">
+      <LineId Id="30" Count="6" />
+      <LineId Id="120" Count="2" />
+      <LineId Id="483" Count="0" />
+      <LineId Id="128" Count="0" />
+      <LineId Id="481" Count="0" />
+      <LineId Id="300" Count="0" />
+      <LineId Id="299" Count="0" />
+      <LineId Id="352" Count="3" />
+      <LineId Id="357" Count="9" />
+      <LineId Id="390" Count="0" />
+      <LineId Id="367" Count="0" />
+      <LineId Id="392" Count="0" />
+      <LineId Id="391" Count="0" />
+      <LineId Id="298" Count="0" />
+      <LineId Id="127" Count="0" />
+      <LineId Id="131" Count="0" />
+      <LineId Id="134" Count="0" />
+      <LineId Id="153" Count="0" />
+      <LineId Id="155" Count="0" />
+      <LineId Id="154" Count="0" />
+      <LineId Id="135" Count="0" />
+      <LineId Id="137" Count="0" />
+      <LineId Id="466" Count="0" />
+      <LineId Id="468" Count="4" />
+      <LineId Id="467" Count="0" />
+      <LineId Id="157" Count="0" />
+      <LineId Id="159" Count="4" />
+      <LineId Id="158" Count="0" />
+      <LineId Id="164" Count="0" />
+      <LineId Id="166" Count="4" />
+      <LineId Id="165" Count="0" />
+      <LineId Id="474" Count="0" />
+      <LineId Id="173" Count="4" />
+      <LineId Id="172" Count="0" />
+      <LineId Id="178" Count="0" />
+      <LineId Id="180" Count="4" />
+      <LineId Id="179" Count="0" />
+      <LineId Id="185" Count="0" />
+      <LineId Id="187" Count="4" />
+      <LineId Id="186" Count="0" />
+      <LineId Id="192" Count="0" />
+      <LineId Id="194" Count="4" />
+      <LineId Id="193" Count="0" />
+      <LineId Id="199" Count="0" />
+      <LineId Id="201" Count="4" />
+      <LineId Id="200" Count="0" />
+      <LineId Id="206" Count="0" />
+      <LineId Id="208" Count="4" />
+      <LineId Id="207" Count="0" />
+      <LineId Id="213" Count="0" />
+      <LineId Id="215" Count="4" />
+      <LineId Id="214" Count="0" />
+      <LineId Id="220" Count="0" />
+      <LineId Id="222" Count="4" />
+      <LineId Id="221" Count="0" />
+      <LineId Id="227" Count="0" />
+      <LineId Id="229" Count="4" />
+      <LineId Id="228" Count="0" />
+      <LineId Id="234" Count="0" />
+      <LineId Id="236" Count="4" />
+      <LineId Id="235" Count="0" />
+      <LineId Id="241" Count="0" />
+      <LineId Id="243" Count="4" />
+      <LineId Id="242" Count="0" />
+      <LineId Id="248" Count="0" />
+      <LineId Id="250" Count="4" />
+      <LineId Id="249" Count="0" />
+      <LineId Id="255" Count="0" />
+      <LineId Id="257" Count="4" />
+      <LineId Id="256" Count="0" />
+      <LineId Id="262" Count="0" />
+      <LineId Id="264" Count="4" />
+      <LineId Id="263" Count="0" />
+      <LineId Id="269" Count="0" />
+      <LineId Id="271" Count="4" />
+      <LineId Id="270" Count="0" />
+      <LineId Id="276" Count="0" />
+      <LineId Id="278" Count="4" />
+      <LineId Id="277" Count="0" />
+      <LineId Id="283" Count="0" />
+      <LineId Id="285" Count="4" />
+      <LineId Id="284" Count="0" />
+      <LineId Id="290" Count="0" />
+      <LineId Id="292" Count="4" />
+      <LineId Id="291" Count="0" />
+      <LineId Id="156" Count="0" />
+      <LineId Id="139" Count="13" />
+      <LineId Id="126" Count="0" />
+      <LineId Id="129" Count="1" />
+      <LineId Id="125" Count="0" />
+      <LineId Id="123" Count="0" />
+      <LineId Id="119" Count="0" />
+      <LineId Id="37" Count="1" />
+      <LineId Id="44" Count="9" />
+      <LineId Id="55" Count="9" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

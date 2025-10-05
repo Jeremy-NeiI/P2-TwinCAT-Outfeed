@@ -1,0 +1,109 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="ExtMode_Init" Id="{208ca540-6b2a-4ae5-84e7-ac901ada21d3}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM ExtMode_Init
+VAR
+	iSTEP : INT:= 0;
+	Pulse1			: TP;
+	Pulse2			: TP;
+	Pulse3			: TP;
+	Pulse4			: TP;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+CASE iSTEP OF
+	
+	//KUKA ext init cmd
+	0:	IF IO_KUKA.Init_Cmd OR IO.bButton THEN
+			iSTEP := iSTEP + 1;
+		END_IF
+	
+	//hardware toggle extmode n stopmess ON, then on move_enable n driveoff
+	//then ON drive on
+	1:	IF IO_KUKA.bEXT_mode THEN
+			IO_KUKA.Init_Cmd := FALSE;
+			IO_control.bMove_enable := IO_control.bDrive_off := TRUE;
+			iSTEP := iSTEP + 1;
+//		ELSE
+//			IO_KUKA.Init_Cmd := FALSE;
+//			iSTEP := 0;
+		END_IF
+		
+	2:	IF IO_control.bMove_enable THEN
+			IO_control.bIO_Act := TRUE;
+			IO_control.bDrive_on := TRUE;
+			IO_KUKA.Init_Cmd := FALSE;
+			iSTEP := iSTEP + 1;
+		END_IF	
+	
+	//if peri_ready on, then off drive_on
+	3:	IF IO_KUKA.bPeri_ready THEN
+			IO_control.bDrive_on := FALSE;
+			iSTEP := iSTEP + 1;
+		ELSE
+			iSTEP := 0;
+		END_IF
+	
+	//IF drive_on is ON, ON conf_mess, then if stopmess is OFF, OFF confmess
+	4:	IF IO_control.bDrive_on = FALSE THEN
+			IO_control.bConf_msg := TRUE;
+			IF NOT IO_KUKA.bStopmess THEN
+				IO_control.bConf_msg := FALSE;
+				iSTEP := iSTEP + 1;
+			ELSE
+				iSTEP := 0;
+			END_IF
+		ELSE
+			IO_KUKA.Init_Cmd := FALSE;
+			iSTEP := 0;
+		END_IF
+	
+	//confmess OFF, ON ext_start, when pro_act is OFF, off ext_start	
+	5:	IF IO_control.bConf_msg = FALSE THEN
+			IO_KUKA.bExt_start := TRUE;
+			iSTEP := iSTEP + 1;
+		ELSE
+			iSTEP := 0;
+		END_IF
+		
+	6:	IF IO_KUKA.bPro_act THEN
+			IO_control.bExt_start := FALSE;		
+			iSTEP := 0;
+		ELSE
+			iSTEP := 0;
+		END_IF	
+		
+		
+END_CASE]]></ST>
+    </Implementation>
+    <LineIds Name="ExtMode_Init">
+      <LineId Id="19" Count="0" />
+      <LineId Id="132" Count="9" />
+      <LineId Id="193" Count="0" />
+      <LineId Id="142" Count="1" />
+      <LineId Id="190" Count="0" />
+      <LineId Id="194" Count="0" />
+      <LineId Id="191" Count="0" />
+      <LineId Id="145" Count="2" />
+      <LineId Id="149" Count="0" />
+      <LineId Id="181" Count="0" />
+      <LineId Id="150" Count="7" />
+      <LineId Id="218" Count="0" />
+      <LineId Id="220" Count="0" />
+      <LineId Id="158" Count="7" />
+      <LineId Id="229" Count="1" />
+      <LineId Id="166" Count="0" />
+      <LineId Id="202" Count="1" />
+      <LineId Id="201" Count="0" />
+      <LineId Id="167" Count="5" />
+      <LineId Id="205" Count="0" />
+      <LineId Id="204" Count="0" />
+      <LineId Id="173" Count="4" />
+      <LineId Id="208" Count="0" />
+      <LineId Id="207" Count="0" />
+      <LineId Id="178" Count="2" />
+      <LineId Id="22" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
