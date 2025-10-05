@@ -1,0 +1,56 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="QR_Scanner_Test" Id="{3b2d791c-92d9-438a-a44e-1d5fc4b17837}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM QR_Scanner_Test
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF IO.fbClient_QR.bConnected THEN	
+	IO.data_send_flag := TRUE ;
+		IF IO.data_send_flag THEN
+			IO.sSend_msg := IO.QR_Read_ON;
+			IO.fbClient_QR.fbTx.AddTail( sPut := IO.sSend_msg); //$R = Carriage Return [CR]
+			IO.data_send_flag := FALSE;
+		END_IF
+END_IF
+	
+IO.sReceived_msg := IO.fbClient_QR.fbRx.sPut;
+
+IO_Conveyor.bScan_OK := LEFT(IO.sReceived_msg, 3) = 'YI-' ;
+IO_Conveyor.bScan_ERROR := LEFT(IO.sReceived_msg, 3) = 'ERR' ;
+
+IF IO_Conveyor.bScan_OK THEN
+	IO_Conveyor.bScan_Job_Done := TRUE ;
+END_IF
+
+
+// Detect rising edge of bScannerDC
+IF IO_Logs.bScannerState_DC AND NOT IO_Logs.bScanner_PreviousState THEN
+    IO_Logs.iCounter_DC := IO_Logs.iCounter_DC + 1;
+END_IF;
+
+// Update previous state
+IO_Logs.bScanner_PreviousState := IO_Logs.bScannerState_DC;
+]]></ST>
+    </Implementation>
+    <LineIds Name="QR_Scanner_Test">
+      <LineId Id="6" Count="0" />
+      <LineId Id="17" Count="0" />
+      <LineId Id="15" Count="0" />
+      <LineId Id="7" Count="3" />
+      <LineId Id="18" Count="0" />
+      <LineId Id="11" Count="0" />
+      <LineId Id="5" Count="0" />
+      <LineId Id="13" Count="0" />
+      <LineId Id="12" Count="0" />
+      <LineId Id="14" Count="0" />
+      <LineId Id="25" Count="0" />
+      <LineId Id="22" Count="0" />
+      <LineId Id="28" Count="1" />
+      <LineId Id="34" Count="0" />
+      <LineId Id="41" Count="7" />
+      <LineId Id="33" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
