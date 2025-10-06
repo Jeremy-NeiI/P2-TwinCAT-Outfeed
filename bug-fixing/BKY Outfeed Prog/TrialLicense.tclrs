@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<TcLicenseInfo xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.beckhoff.com/schemas/2011/11/TcLicenseInfo">
+	<LicenseInfo>
+		<SystemId>{CA5A0533-429D-F33A-44E3-DEB23F05A2B2}</SystemId>
+		<IssueTime>2025-10-06T00:06:00</IssueTime>
+		<ExpireTime>2025-10-14T00:00:00</ExpireTime>
+		<LicenseKey>aa7783dd62c92a3dff5de4e49f036ede97ac75d9429a6c209a6d59f786fb64a1474dbc660d3f35b7fa54f934daf8d77bd777cdff1ab16f4758ddbabba8005ea14063bd47a2fdca92dc7324060bc9d01a99bd71ddbd26a3763d4aff6ae96044a8f138983af42ab9899231753688c820498d1d207a6ef2d5900af85d1243caea40174402a40838f58264a19fcea298ead78c9c167caa01beeb8243182924f7b439881e3a2dea98024f35714bc9efddc57ba77ead15091047f9ef9007bf20f5cdab0bd64f2e1c433d114f7ea1e9bd6fc41b533f3b4c7508ec8cb5e32f490db5d693735de672f8eb3e40683cf50e8af21911bfab6919c0203d179506cf0eacaeee07</LicenseKey>
+		<License>
+			<LicenseId>{4C256767-E6E6-4AF5-BD68-9F7ABAD0C200}</LicenseId>
+			<Name>TC3 ADS</Name>
+			<OrderNo>TC1000</OrderNo>
+		</License>
+		<License>
+			<LicenseId>{3FF18E97-7754-401B-93FB-70544DE28A13}</LicenseId>
+			<Name>TC3 IO</Name>
+			<OrderNo>TC1100</OrderNo>
+		</License>
+		<License>
+			<LicenseId>{66689887-CCBD-452C-AC9A-039D997C6E66}</LicenseId>
+			<Name>TC3 PLC</Name>
+			<OrderNo>TC1200</OrderNo>
+		</License>
+		<License>
+			<LicenseId>{D4390DEA-A64D-494D-9E09-275326DBB0CB}</LicenseId>
+			<Name>TC3 PLC-HMI (RT)</Name>
+		</License>
+		<License>
+			<LicenseId>{FDE02854-39A7-440C-9EAE-C234A16A3CED}</LicenseId>
+			<Name>TC3 PLC-HMI</Name>
+			<OrderNo>TF1800</OrderNo>
+		</License>
+		<License>
+			<LicenseId>{70A64701-DC70-4557-B425-EC0B67E22215}</LicenseId>
+			<Name>TC3 IoT HTTP Protocol</Name>
+		</License>
+		<License>
+			<LicenseId>{42E60F0D-E1AD-4B78-84B8-FD3ECF44FAA7}</LicenseId>
+			<Name>TC3 IoT HTTPS/REST</Name>
+			<OrderNo>TF6760</OrderNo>
+		</License>
+		<License>
+			<LicenseId>{3EBB9639-5FF3-42B6-8847-35C70DC013C8}</LicenseId>
+			<Name>TC3 TCP/IP</Name>
+			<OrderNo>TF6310</OrderNo>
+		</License>
+	</LicenseInfo>
+</TcLicenseInfo>

@@ -11,6 +11,7 @@ VAR
 	UpdatePeriod	: TIME		:= T#60S;
 	Timer 			: BOOL;
 	
+	sAPI_addr		: STRING := '/upload?file=SIM_ASRSAction.json';
 	API_MSG			: STRING(3500);
 	HttpSend		: BOOL := FALSE;
 	bSuccess		: BOOL;
@@ -272,7 +273,7 @@ IF fb_TimeStamp.timeValid THEN
 	IF fbHttpProcess.bConfigured THEN 
 		fb_httppost( 	bSend		:= HttpSend, 
 						fbClient	:= fbHttpProcess, 
-						API_URI		:= '/upload?file=Outgoing.json',
+						API_URI		:= sAPI_addr,
 						API_Msg		:= IO.DIGI_MSG,
 						bSuccess 	=> bSuccess,
 						bError		=> bError );
