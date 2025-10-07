@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="Scanner_PwrCtrl" Id="{c0f972d3-c9df-4efc-b3dd-a7f3ab1a9ff7}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM Scanner_PwrCtrl
+VAR
+	Timer1	:	TON;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[IF IO.bReset_ScnrPwr_Cmd THEN
+	IO_control.bScanner_PwrCtrl := FALSE;
+	Timer1(IN:= TRUE , PT:= T#1S);
+	IF Timer1.Q THEN
+		IO_control.bScanner_PwrCtrl := TRUE;
+		Timer1(IN:= FALSE);
+		IO.bReset_ScnrPwr_Cmd := FALSE;
+		IO.Scn_Reset_Complete := TRUE;
+	END_IF
+END_IF
+]]></ST>
+    </Implementation>
+    <LineIds Name="Scanner_PwrCtrl">
+      <LineId Id="7" Count="6" />
+      <LineId Id="18" Count="0" />
+      <LineId Id="14" Count="1" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="Process_Logging" Id="{87b540dd-6262-40f9-9bec-4100db02f950}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM Process_Logging
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[//IO0.fb_TimeStamp() ;
+device_rtrig() ;
+
+IF IO_Logs.bStart.Q THEN
+	IO.LogProcess(	sLogEvent	 := MSG.EVENT_BTN, 
+	 				sLogComp	 := MSG.COMP_START, 
+	 				sLogAction	 := MSG.ACTION_START, 
+	 				sLogStatus	 := MSG.STATUS_ACK,
+	 		 		blogFlag	 := TRUE);
+//	IF IO.LogProcess.blog_complete OR IO.LogProcess.blog_error THEN
+//		IO.bStart := FALSE;
+//	END_IF
+END_IF		
+
+IF IO_Logs.bReset.Q THEN
+//	IO.LogProcess(	sLogEvent	 := MSG.EVENT_BTN, 
+	// 				sLogComp	 := MSG.COMP_RESET, 
+	 //				sLogAction	 := MSG.ACTION_RESET, 
+	 	//			sLogStatus	 := MSG.STATUS_ACK,
+	 		// 		blogFlag	 := TRUE);
+END_IF	
+
+//IF IO_Logs.bEstop.Q THEN
+//	IO.LogProcess(	sLogEvent	 := MSG.EVENT_BTN, 
+//	 				sLogComp	 := MSG.COMP_ESTOP, 
+//	 				sLogAction	 := MSG.ACTION_ESTOP, 
+//	 				sLogStatus	 := MSG.STATUS_ACK,
+//	 		 		blogFlag	 := TRUE);
+//END_IF
+
+//IF IO_Logs.bOperational_State.Q THEN
+//	IO.LogProcess(	sLogEvent	 := MSG.EVENT_BTN, 
+//	 				sLogComp	 := MSG.COMP_ESTOP, 
+//	 				sLogAction	 := MSG.ACTION_ESTOP, 
+//	 				sLogStatus	 := MSG.STATUS_ACK,
+//	 		 		blogFlag	 := TRUE);
+//END_IF								
+
+//IF IO_Logs.data_send_flag.Q THEN
+//	IO.LogProcess(	sLogEvent	 := MSG.EVENT_PROCESS, 
+//	 				sLogComp	 := MSG.COMP_SCANNER, 
+//	 				sLogAction	 := MSG.ACTION_SCNR_ON, 
+//	 				sLogStatus	 := MSG.STATUS_DONE,
+//	 		 		blogFlag	 := TRUE);
+//END_IF		
+]]></ST>
+    </Implementation>
+    <LineIds Name="Process_Logging">
+      <LineId Id="10" Count="0" />
+      <LineId Id="130" Count="0" />
+      <LineId Id="77" Count="0" />
+      <LineId Id="68" Count="8" />
+      <LineId Id="67" Count="0" />
+      <LineId Id="30" Count="0" />
+      <LineId Id="96" Count="4" />
+      <LineId Id="127" Count="0" />
+      <LineId Id="5" Count="0" />
+      <LineId Id="106" Count="6" />
+      <LineId Id="105" Count="0" />
+      <LineId Id="117" Count="6" />
+      <LineId Id="116" Count="0" />
+      <LineId Id="52" Count="4" />
+      <LineId Id="131" Count="0" />
+      <LineId Id="58" Count="0" />
+      <LineId Id="51" Count="0" />
+      <LineId Id="66" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

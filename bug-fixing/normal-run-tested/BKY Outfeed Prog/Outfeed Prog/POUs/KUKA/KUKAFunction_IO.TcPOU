@@ -1,0 +1,465 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="KUKAFunction_IO" Id="{79ec6522-7a83-4394-84f2-e2340aeadddb}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM KUKAFunction_IO
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[// ================================================  kuka i/o function (plc input)
+(* input 200 - 231 *) 	//robot program
+IO_KUKA.bInBit[1,0] := IO_KUKA.PLC_I_D1.0; //200
+IO_KUKA.bInBit[1,1] := IO_KUKA.PLC_I_D1.1; //201
+IO_KUKA.bInBit[1,2] := IO_KUKA.PLC_I_D1.2; //202
+IO_KUKA.bInBit[1,3] := IO_KUKA.PLC_I_D1.3; //203
+IO_KUKA.bInBit[1,4] := IO_KUKA.PLC_I_D1.4; //204
+IO_KUKA.bInBit[1,5] := IO_KUKA.PLC_I_D1.5; //205
+IO_KUKA.bInBit[1,6] := IO_KUKA.PLC_I_D1.6; //206
+IO_KUKA.bInBit[1,7] := IO_KUKA.PLC_I_D1.7; //207
+IO_KUKA.bInBit[1,8] := IO_KUKA.PLC_I_D1.8; //208
+IO_KUKA.bInBit[1,9] := IO_KUKA.PLC_I_D1.9; //209
+IO_KUKA.bInBit[1,10] := IO_KUKA.PLC_I_D1.10; //210
+IO_KUKA.bInBit[1,11] := IO_KUKA.PLC_I_D1.11; //211
+IO_KUKA.bInBit[1,12] := IO_KUKA.PLC_I_D1.12; //212
+IO_KUKA.bInBit[1,13] := IO_KUKA.PLC_I_D1.13; //213
+IO_KUKA.bInBit[1,14] := IO_KUKA.PLC_I_D1.14; //214
+IO_KUKA.bInBit[1,15] := IO_KUKA.PLC_I_D1.15; //215
+IO_KUKA.bInBit[1,16] := IO_KUKA.PLC_I_D1.16; //216
+IO_KUKA.bInBit[1,17] := IO_KUKA.PLC_I_D1.17; //217
+IO_KUKA.bInBit[1,18] := IO_KUKA.PLC_I_D1.18; //218
+IO_KUKA.bInBit[1,19] := IO_KUKA.PLC_I_D1.19; //219
+IO_KUKA.bInBit[1,20] := IO_KUKA.PLC_I_D1.20; //220
+IO_KUKA.bInBit[1,21] := IO_KUKA.PLC_I_D1.21;
+IO_KUKA.bInBit[1,22] := IO_KUKA.PLC_I_D1.22;
+IO_KUKA.bInBit[1,23] := IO_KUKA.PLC_I_D1.23;
+IO_KUKA.bInBit[1,24] := IO_KUKA.PLC_I_D1.24;
+IO_KUKA.bInBit[1,25] := IO_KUKA.PLC_I_D1.25;
+IO_KUKA.bInBit[1,26] := IO_KUKA.PLC_I_D1.26;
+IO_KUKA.bInBit[1,27] := IO_KUKA.PLC_I_D1.27; 
+IO_KUKA.bInBit[1,28] := IO_KUKA.PLC_I_D1.28; 
+IO_KUKA.bInBit[1,29] := IO_KUKA.PLC_I_D1.29; 
+IO_KUKA.bInBit[1,30] := IO_KUKA.PLC_I_D1.30; 
+IO_KUKA.bInBit[1,31] := IO_KUKA.PLC_I_D1.31; 
+	
+IO_KUKA.bGo_home_InProcess := IO_KUKA.bInBit[1,0];
+IO_KUKA.bStandby_pos_InProcess := IO_KUKA.bInBit[1,1];
+IO_KUKA.bBin_pickup_InProcess := IO_KUKA.bInBit[1,2];
+IO_KUKA.bRA_pos1_InProcess := IO_KUKA.bInBit[1,3];
+IO_KUKA.bRA_pos2_InProcess := IO_KUKA.bInBit[1,4];
+IO_KUKA.bRA_pos3_InProcess := IO_KUKA.bInBit[1,5];
+IO_KUKA.bRA_pos4_InProcess := IO_KUKA.bInBit[1,6];
+IO_KUKA.bRA_pos5_InProcess := IO_KUKA.bInBit[1,7];
+IO_KUKA.bRA_pos6_InProcess := IO_KUKA.bInBit[1,8];
+IO_KUKA.bRB_pos7_InProcess := IO_KUKA.bInBit[1,9];
+IO_KUKA.bRB_pos8_InProcess := IO_KUKA.bInBit[1,10];
+IO_KUKA.bRB_pos9_InProcess := IO_KUKA.bInBit[1,11];
+IO_KUKA.bRB_pos10_InProcess := IO_KUKA.bInBit[1,12];
+IO_KUKA.bRB_pos11_InProcess := IO_KUKA.bInBit[1,13];
+IO_KUKA.bRB_pos12_InProcess := IO_KUKA.bInBit[1,14];
+IO_KUKA.bRC_pos13_InProcess := IO_KUKA.bInBit[1,15];
+IO_KUKA.bRC_pos14_InProcess := IO_KUKA.bInBit[1,16];
+IO_KUKA.bRC_pos15_InProcess := IO_KUKA.bInBit[1,17];
+IO_KUKA.bRC_pos16_InProcess := IO_KUKA.bInBit[1,18];
+IO_KUKA.bRC_pos17_InProcess := IO_KUKA.bInBit[1,19];
+IO_KUKA.bRC_pos18_InProcess := IO_KUKA.bInBit[1,20];
+IO_KUKA.bJob_Fail := IO_KUKA.bInBit[1,21];
+
+(* input 993 - 1024 *)	// robot system
+IO_KUKA.bInBit[2,0] := IO_KUKA.PLC_I_D2.0; //993
+IO_KUKA.bInBit[2,1] := IO_KUKA.PLC_I_D2.1; //995
+IO_KUKA.bInBit[2,2] := IO_KUKA.PLC_I_D2.2; //995
+IO_KUKA.bInBit[2,3] := IO_KUKA.PLC_I_D2.3; //996
+IO_KUKA.bInBit[2,4] := IO_KUKA.PLC_I_D2.4; //997
+IO_KUKA.bInBit[2,5] := IO_KUKA.PLC_I_D2.5; //998
+IO_KUKA.bInBit[2,6] := IO_KUKA.PLC_I_D2.6; //999
+IO_KUKA.bInBit[2,7] := IO_KUKA.PLC_I_D2.7; //1000
+IO_KUKA.bInBit[2,8] := IO_KUKA.PLC_I_D2.8; //1001
+IO_KUKA.bInBit[2,9] := IO_KUKA.PLC_I_D2.9; //1002
+IO_KUKA.bInBit[2,10] := IO_KUKA.PLC_I_D2.10; //1003
+IO_KUKA.bInBit[2,11] := IO_KUKA.PLC_I_D2.11; //1004
+IO_KUKA.bInBit[2,12] := IO_KUKA.PLC_I_D2.12; //1005
+IO_KUKA.bInBit[2,13] := IO_KUKA.PLC_I_D2.13; //1006
+IO_KUKA.bInBit[2,14] := IO_KUKA.PLC_I_D2.14; //1007
+IO_KUKA.bInBit[2,15] := IO_KUKA.PLC_I_D2.15; //1008
+IO_KUKA.bInBit[2,16] := IO_KUKA.PLC_I_D2.16; 
+IO_KUKA.bInBit[2,17] := IO_KUKA.PLC_I_D2.17; 
+IO_KUKA.bInBit[2,18] := IO_KUKA.PLC_I_D2.18; 
+IO_KUKA.bInBit[2,19] := IO_KUKA.PLC_I_D2.19; 
+IO_KUKA.bInBit[2,20] := IO_KUKA.PLC_I_D2.20; 
+IO_KUKA.bInBit[2,21] := IO_KUKA.PLC_I_D2.21;
+IO_KUKA.bInBit[2,22] := IO_KUKA.PLC_I_D2.22;
+IO_KUKA.bInBit[2,23] := IO_KUKA.PLC_I_D2.23;
+IO_KUKA.bInBit[2,24] := IO_KUKA.PLC_I_D2.24;
+IO_KUKA.bInBit[2,25] := IO_KUKA.PLC_I_D2.25;
+IO_KUKA.bInBit[2,26] := IO_KUKA.PLC_I_D2.26;
+IO_KUKA.bInBit[2,27] := IO_KUKA.PLC_I_D2.27; 
+IO_KUKA.bInBit[2,28] := IO_KUKA.PLC_I_D2.28; 
+IO_KUKA.bInBit[2,29] := IO_KUKA.PLC_I_D2.29; 
+IO_KUKA.bInBit[2,30] := IO_KUKA.PLC_I_D2.30; 
+IO_KUKA.bInBit[2,31] := IO_KUKA.PLC_I_D2.31; 
+
+IO_KUKA.bT1_mode := IO_KUKA.bInBit[2,0];
+IO_KUKA.bT2_mode := IO_KUKA.bInBit[2,1];
+IO_KUKA.bAUT_mode := IO_KUKA.bInBit[2,2];
+IO_KUKA.bEXT_mode := IO_KUKA.bInBit[2,3];
+IO_KUKA.bOn_path := IO_KUKA.bInBit[2,4];
+IO_KUKA.bIn_home := IO_KUKA.bInBit[2,5];
+IO_KUKA.bRC_ready := IO_KUKA.bInBit[2,6];
+IO_KUKA.bAlarm_stop := IO_KUKA.bInBit[2,7];
+IO_KUKA.bUser_safety := IO_KUKA.bInBit[2,8];
+IO_KUKA.bPeri_ready := IO_KUKA.bInBit[2,9];
+IO_KUKA.bIO_ActConf := IO_KUKA.bInBit[2,10];
+IO_KUKA.bStopmess := IO_KUKA.bInBit[2,11];
+IO_KUKA.bPro_act := IO_KUKA.bInBit[2,12];
+IO_KUKA.bPG_req := IO_KUKA.bInBit[2,13];
+IO_KUKA.bAppl_run := IO_KUKA.bInBit[2,14];
+IO_KUKA.bPro_move := IO_KUKA.bInBit[2,15];
+
+
+
+
+// ================================================  kuka i/o function (plc output)
+(* output 200 - 231 *)	// robot program
+IO_KUKA.PLC_O_D1.0 := IO_KUKA.bOutBit[1,0] := IO_KUKA.bGo_home; 
+IO_KUKA.PLC_O_D1.1 := IO_KUKA.bOutBit[1,1] := IO_KUKA.bStandby_pos; 
+IO_KUKA.PLC_O_D1.2 := IO_KUKA.bOutBit[1,2] := IO_KUKA.bBin_pickup; 
+
+IO_KUKA.PLC_O_D1.3 := IO_KUKA.bOutBit[1,3] := IO_KUKA.bRA_pos1; 
+IO_KUKA.PLC_O_D1.4 := IO_KUKA.bOutBit[1,4] := IO_KUKA.bRA_pos2;
+IO_KUKA.PLC_O_D1.5 := IO_KUKA.bOutBit[1,5] := IO_KUKA.bRA_pos3; 
+IO_KUKA.PLC_O_D1.6 := IO_KUKA.bOutBit[1,6] := IO_KUKA.bRA_pos4; 
+IO_KUKA.PLC_O_D1.7 := IO_KUKA.bOutBit[1,7] := IO_KUKA.bRA_pos5; 
+IO_KUKA.PLC_O_D1.8 := IO_KUKA.bOutBit[1,8] := IO_KUKA.bRA_pos6; 
+
+IO_KUKA.PLC_O_D1.9 := IO_KUKA.bOutBit[1,9] := IO_KUKA.bRB_pos7;
+IO_KUKA.PLC_O_D1.10 := IO_KUKA.bOutBit[1,10] := IO_KUKA.bRB_pos8;
+IO_KUKA.PLC_O_D1.11 := IO_KUKA.bOutBit[1,11] := IO_KUKA.bRB_pos9;
+IO_KUKA.PLC_O_D1.12 := IO_KUKA.bOutBit[1,12] := IO_KUKA.bRB_pos10;
+IO_KUKA.PLC_O_D1.13 := IO_KUKA.bOutBit[1,13] := IO_KUKA.bRB_pos11;
+IO_KUKA.PLC_O_D1.14 := IO_KUKA.bOutBit[1,14] := IO_KUKA.bRB_pos12;
+
+IO_KUKA.PLC_O_D1.15 := IO_KUKA.bOutBit[1,15] := IO_KUKA.bRC_pos13;
+IO_KUKA.PLC_O_D1.16 := IO_KUKA.bOutBit[1,16] := IO_KUKA.bRC_pos14;
+IO_KUKA.PLC_O_D1.17 := IO_KUKA.bOutBit[1,17] := IO_KUKA.bRC_pos15;
+IO_KUKA.PLC_O_D1.18 := IO_KUKA.bOutBit[1,18] := IO_KUKA.bRC_pos16;
+IO_KUKA.PLC_O_D1.19 := IO_KUKA.bOutBit[1,19] := IO_KUKA.bRC_pos17;
+IO_KUKA.PLC_O_D1.20 := IO_KUKA.bOutBit[1,20] := IO_KUKA.bRC_pos18;
+
+IO_KUKA.PLC_O_D1.21 := IO_KUKA.bOutBit[1,21];
+IO_KUKA.PLC_O_D1.22 := IO_KUKA.bOutBit[1,22];
+IO_KUKA.PLC_O_D1.23 := IO_KUKA.bOutBit[1,23];
+IO_KUKA.PLC_O_D1.24 := IO_KUKA.bOutBit[1,24];
+IO_KUKA.PLC_O_D1.25 := IO_KUKA.bOutBit[1,25];
+IO_KUKA.PLC_O_D1.26 := IO_KUKA.bOutBit[1,26];
+IO_KUKA.PLC_O_D1.27 := IO_KUKA.bOutBit[1,27];
+IO_KUKA.PLC_O_D1.28 := IO_KUKA.bOutBit[1,28];
+IO_KUKA.PLC_O_D1.29 := IO_KUKA.bOutBit[1,29];
+IO_KUKA.PLC_O_D1.30 := IO_KUKA.bOutBit[1,30];
+IO_KUKA.PLC_O_D1.31 := IO_KUKA.bOutBit[1,31];
+
+
+(* 1027 - 1059 *)	//robot system
+IO_KUKA.PLC_O_D2.0 := IO_KUKA.bOutBit[2,0] := IO_KUKA.bMove_enable; //1027 move enable
+IO_KUKA.PLC_O_D2.1 := IO_KUKA.bOutBit[2,1] := IO_KUKA.bDrive_off; //1028 drive off
+IO_KUKA.PLC_O_D2.2 := IO_KUKA.bOutBit[2,2] := IO_KUKA.bIO_Act; //1029 Activate interface (on to start motor)
+IO_KUKA.PLC_O_D2.3 := IO_KUKA.bOutBit[2,3] := IO_KUKA.bExt_start; //1030 ext start
+IO_KUKA.PLC_O_D2.4 := IO_KUKA.bOutBit[2,4] := IO_KUKA.bConf_msg; //1031 confirm msg
+IO_KUKA.PLC_O_D2.5 := IO_KUKA.bOutBit[2,5] := IO_KUKA.bDrive_on; //1032 Drives on
+IO_KUKA.PLC_O_D2.6 := IO_KUKA.bOutBit[2,6] := IO_KUKA.bPG_fbit; //1033 pgno_fbit
+IO_KUKA.PLC_O_D2.7 := IO_KUKA.bOutBit[2,7] := IO_KUKA.bPG_valid; //1034 pgno_valid
+IO_KUKA.PLC_O_D2.8 := IO_KUKA.bOutBit[2,8] := IO_KUKA.bPG_parity; //1035 pgno_parity
+IO_KUKA.PLC_O_D2.9 := IO_KUKA.bOutBit[2,9];
+IO_KUKA.PLC_O_D2.10 := IO_KUKA.bOutBit[2,10];
+IO_KUKA.PLC_O_D2.11 := IO_KUKA.bOutBit[2,11];
+IO_KUKA.PLC_O_D2.12 := IO_KUKA.bOutBit[2,12];
+IO_KUKA.PLC_O_D2.13 := IO_KUKA.bOutBit[2,13];
+IO_KUKA.PLC_O_D2.14 := IO_KUKA.bOutBit[2,14];
+IO_KUKA.PLC_O_D2.15 := IO_KUKA.bOutBit[2,15];
+IO_KUKA.PLC_O_D2.16 := IO_KUKA.bOutBit[2,16];
+IO_KUKA.PLC_O_D2.17 := IO_KUKA.bOutBit[2,17];
+IO_KUKA.PLC_O_D2.18 := IO_KUKA.bOutBit[2,18];
+IO_KUKA.PLC_O_D2.19 := IO_KUKA.bOutBit[2,19];
+IO_KUKA.PLC_O_D2.20 := IO_KUKA.bOutBit[2,20];
+IO_KUKA.PLC_O_D2.21 := IO_KUKA.bOutBit[2,21];
+IO_KUKA.PLC_O_D2.22 := IO_KUKA.bOutBit[2,22];
+IO_KUKA.PLC_O_D2.23 := IO_KUKA.bOutBit[2,23];
+IO_KUKA.PLC_O_D2.24 := IO_KUKA.bOutBit[2,24];
+IO_KUKA.PLC_O_D2.25 := IO_KUKA.bOutBit[2,25];
+IO_KUKA.PLC_O_D2.26 := IO_KUKA.bOutBit[2,26];
+IO_KUKA.PLC_O_D2.27 := IO_KUKA.bOutBit[2,27];
+IO_KUKA.PLC_O_D2.28 := IO_KUKA.bOutBit[2,28];
+IO_KUKA.PLC_O_D2.29 := IO_KUKA.bOutBit[2,29];
+IO_KUKA.PLC_O_D2.30 := IO_KUKA.bOutBit[2,30];
+IO_KUKA.PLC_O_D2.31 := IO_KUKA.bOutBit[2,31];
+
+
+
+
+////================================ KUKA STATUS SECTION ====================================================
+//	(*OUTPUT 1026 ~ 1042*)
+//	IO_KUKA.PLC_O_D1.0 := IO_KUKA.bOutBit[1,0] := IO_KUKA.bMove_enable; //1027 move enable
+//	IO_KUKA.PLC_O_D1.1 := IO_KUKA.bOutBit[1,1] := IO_KUKA.bDrive_off; //1028 drive off
+//	IO_KUKA.PLC_O_D1.2 := IO_KUKA.bOutBit[1,2] := IO_KUKA.bIO_Act; //1029 Activate interface (on to start motor)
+//	IO_KUKA.PLC_O_D1.3 := IO_KUKA.bOutBit[1,3] := IO_KUKA.bExt_start; //1030 ext start
+//	IO_KUKA.PLC_O_D1.4 := IO_KUKA.bOutBit[1,4] := IO_KUKA.bConf_msg; //1031 confirm msg
+//	IO_KUKA.PLC_O_D1.5 := IO_KUKA.bOutBit[1,5] := IO_KUKA.bDrive_on; //1032 Drives on
+//	IO_KUKA.PLC_O_D1.6 := IO_KUKA.bOutBit[1,6] := IO_KUKA.bPG_fbit; //1033 pgno_fbit
+//	IO_KUKA.PLC_O_D1.7 := IO_KUKA.bOutBit[1,7] := IO_KUKA.bPG_valid; //1034 pgno_valid
+	
+//	IO_KUKA.PLC_O_D2.0 := IO_KUKA.bOutBit[2,0] := IO_KUKA.bPG_parity; //1035
+//	IO_KUKA.PLC_O_D2.1 := IO_KUKA.bOutBit[2,1]; //1036
+//	IO_KUKA.PLC_O_D2.2 := IO_KUKA.bOutBit[2,2]; //1037
+//	IO_KUKA.PLC_O_D2.3 := IO_KUKA.bOutBit[2,3]; //1038
+//	IO_KUKA.PLC_O_D2.4 := IO_KUKA.bOutBit[2,4]; //1039
+//	IO_KUKA.PLC_O_D2.5 := IO_KUKA.bOutBit[2,5]; //1040
+//	IO_KUKA.PLC_O_D2.6 := IO_KUKA.bOutBit[2,6]; //1041
+//	IO_KUKA.PLC_O_D2.7 := IO_KUKA.bOutBit[2,7]; //1042
+	
+	
+//	(*INPUT 993 ~ 1008*)
+//	IO_KUKA.bInBit[1,0] := IO_KUKA.PLC_I_D1.0; //993 T1 mode
+//	IO_KUKA.bInBit[1,1] := IO_KUKA.PLC_I_D1.1; //994 T2 mode
+//	IO_KUKA.bInBit[1,2] := IO_KUKA.PLC_I_D1.2; //995 AUT mode
+//	IO_KUKA.bInBit[1,3] := IO_KUKA.PLC_I_D1.3; //996 EXT MODE
+//	IO_KUKA.bInBit[1,4] := IO_KUKA.PLC_I_D1.4; //997 on_path
+//	IO_KUKA.bInBit[1,5] := IO_KUKA.PLC_I_D1.5; //998 in_home
+//	IO_KUKA.bInBit[1,6] := IO_KUKA.PLC_I_D1.6; //999 rc_ready
+//	IO_KUKA.bInBit[1,7] := IO_KUKA.PLC_I_D1.7; //1000 alarm stop
+	
+//	IO_KUKA.bInBit[2,0] := IO_KUKA.PLC_I_D2.0; //1001 user_safe
+//	IO_KUKA.bInBit[2,1] := IO_KUKA.PLC_I_D2.1; //1002 peri_ready
+//	IO_KUKA.bInBit[2,2] := IO_KUKA.PLC_I_D2.2; //1003 i_o_actconf
+//	IO_KUKA.bInBit[2,3] := IO_KUKA.PLC_I_D2.3; //1004 stop_mess
+//	IO_KUKA.bInBit[2,4] := IO_KUKA.PLC_I_D2.4; //1005 pro_act
+//	IO_KUKA.bInBit[2,5] := IO_KUKA.PLC_I_D2.5; //1006 pgno_req
+//	IO_KUKA.bInBit[2,6] := IO_KUKA.PLC_I_D2.6; //1007 appl_run
+//	IO_KUKA.bInBit[2,7] := IO_KUKA.PLC_I_D2.7; //1008 pro_move
+	
+	
+//	IO_KUKA.bT1_mode := IO_KUKA.bInBit[1,0];
+//	IO_KUKA.bT2_mode := IO_KUKA.bInBit[1,1];
+//	IO_KUKA.bAUT_mode := IO_KUKA.bInBit[1,2];
+//	IO_KUKA.bEXT_mode := IO_KUKA.bInBit[1,3];
+//	IO_KUKA.bOn_path := IO_KUKA.bInBit[1,4];
+//	IO_KUKA.bIn_home := IO_KUKA.bInBit[1,5];
+//	IO_KUKA.bRC_ready := IO_KUKA.bInBit[1,6];
+//	IO_KUKA.bAlarm_stop := IO_KUKA.bInBit[1,7];
+	
+//	IO_KUKA.bUser_safety := IO_KUKA.bInBit[2,0];
+//	IO_KUKA.bPeri_ready := IO_KUKA.bInBit[2,1];
+//	IO_KUKA.bIO_ActConf := IO_KUKA.bInBit[2,2];
+//	IO_KUKA.bStopmess := IO_KUKA.bInBit[2,3];
+//	IO_KUKA.bPro_act := IO_KUKA.bInBit[2,4];
+//	IO_KUKA.bPG_req := IO_KUKA.bInBit[2,5];
+//	IO_KUKA.bAppl_run := IO_KUKA.bInBit[2,6];
+//	IO_KUKA.bPro_move := IO_KUKA.bInBit[2,7];
+	
+
+	
+//	//================================ KUKA JOB SECTION ====================================
+//	IF IO_KUKA.Motion_Disable THEN
+//		RETURN;
+//	END_IF
+	
+//	(*======= PLC OUTPUT (KUKA INPUT) ==========*)
+//	IO_KUKA.PLC_O_D3.0 := IO_KUKA.bOutBit[3,0] := IO_KUKA.bGo_home ; //200 go_home
+//	IO_KUKA.PLC_O_D3.1 := IO_KUKA.bOutBit[3,1] := IO_KUKA.bStandby_pos; //201 standby_pos	  
+//	IO_KUKA.PLC_O_D3.2 := IO_KUKA.bOutBit[3,2] := IO_KUKA.bBin_pickup; //202 bin_pickup
+//	IO_KUKA.PLC_O_D3.3 := IO_KUKA.bOutBit[3,3] := IO_KUKA.bRA_pos1; //203 ra_pos1
+//	IO_KUKA.PLC_O_D3.4 := IO_KUKA.bOutBit[3,4] := IO_KUKA.bRA_pos2; //204 ra_pos2
+//	IO_KUKA.PLC_O_D3.5 := IO_KUKA.bOutBit[3,5] := IO_KUKA.bRA_pos3; //205 ra_pos3
+//	IO_KUKA.PLC_O_D3.6 := IO_KUKA.bOutBit[3,6] := IO_KUKA.bRA_pos4; //206 ra_pos4
+//	IO_KUKA.PLC_O_D3.7 := IO_KUKA.bOutBit[3,7] := IO_KUKA.bRA_pos5; //207 ra_pos5
+	
+	
+//	IO_KUKA.PLC_O_D4.0 := IO_KUKA.bOutBit[4,0] := IO_KUKA.bRA_pos6; //208 ra_pos6
+//	IO_KUKA.PLC_O_D4.1 := IO_KUKA.bOutBit[4,1] := IO_KUKA.bRA_pos7; //209 rb_pos1
+//	IO_KUKA.PLC_O_D4.2 := IO_KUKA.bOutBit[4,2] := IO_KUKA.bRB_pos8; //210 rb_pos2
+//	IO_KUKA.PLC_O_D4.3 := IO_KUKA.bOutBit[4,3] := IO_KUKA.bRB_pos9; //211 rb_pos3
+//	IO_KUKA.PLC_O_D4.4 := IO_KUKA.bOutBit[4,4] := IO_KUKA.bRB_pos10; //212 rb_pos4
+//	IO_KUKA.PLC_O_D4.5 := IO_KUKA.bOutBit[4,5] := IO_KUKA.bRB_pos11; //213 rb_pos5
+//	IO_KUKA.PLC_O_D4.6 := IO_KUKA.bOutBit[4,6] := IO_KUKA.bRB_pos12; //214 rb_pos6
+//	IO_KUKA.PLC_O_D4.7 := IO_KUKA.bOutBit[4,7] := IO_KUKA.bRC_pos13; //215 rc_pos1
+	
+//	IO_KUKA.PLC_O_D5.0 := IO_KUKA.bOutBit[5,0] := IO_KUKA.bRC_pos14; //216 rc_pos2
+//	IO_KUKA.PLC_O_D5.1 := IO_KUKA.bOutBit[5,1] := IO_KUKA.bRC_pos15; //217 rc_pos3
+//	IO_KUKA.PLC_O_D5.2 := IO_KUKA.bOutBit[5,2] := IO_KUKA.bRC_pos16; //218 rc_pos4
+//	IO_KUKA.PLC_O_D5.3 := IO_KUKA.bOutBit[5,3] := IO_KUKA.bRC_pos17; //219 rc_pos5
+//	IO_KUKA.PLC_O_D5.4 := IO_KUKA.bOutBit[5,4] := IO_KUKA.bRC_pos18; //220 rc_pos6
+//	IO_KUKA.PLC_O_D5.5 := IO_KUKA.bOutBit[5,5] := IO_KUKA.bJob_Fail; //221 
+//	IO_KUKA.PLC_O_D5.6 := IO_KUKA.bOutBit[5,6]; //222 
+//	IO_KUKA.PLC_O_D5.7 := IO_KUKA.bOutBit[5,7]; //223 
+
+//	IO_KUKA.PLC_O_D6.0 := IO_KUKA.bOutBit[6,0]; //224
+//	IO_KUKA.PLC_O_D6.1 := IO_KUKA.bOutBit[6,1]; //225
+//	IO_KUKA.PLC_O_D6.2 := IO_KUKA.bOutBit[6,2]; //226
+//	IO_KUKA.PLC_O_D6.3 := IO_KUKA.bOutBit[6,3]; //227
+//	IO_KUKA.PLC_O_D6.4 := IO_KUKA.bOutBit[6,4]; //228
+//	IO_KUKA.PLC_O_D6.5 := IO_KUKA.bOutBit[6,5]; //229
+//	IO_KUKA.PLC_O_D6.6 := IO_KUKA.bOutBit[6,6]; //230
+//	IO_KUKA.PLC_O_D6.7 := IO_KUKA.bOutBit[6,7]; //231
+ 
+	
+//	(*======= PLC INPUT (KUKA OUTPUT) ==========*)
+//	IO_KUKA.bInBit[3,0] := IO_KUKA.PLC_I_D3.0; //200
+//	IO_KUKA.bInBit[3,1] := IO_KUKA.PLC_I_D3.1; //201
+//	IO_KUKA.bInBit[3,2] := IO_KUKA.PLC_I_D3.2; //202
+//	IO_KUKA.bInBit[3,3] := IO_KUKA.PLC_I_D3.3; //203
+//	IO_KUKA.bInBit[3,4] := IO_KUKA.PLC_I_D3.4; //204
+//	IO_KUKA.bInBit[3,5] := IO_KUKA.PLC_I_D3.5; //205
+//	IO_KUKA.bInBit[3,6] := IO_KUKA.PLC_I_D3.6; //206
+//	IO_KUKA.bInBit[3,7] := IO_KUKA.PLC_I_D3.7; //207
+	
+	
+//	IO_KUKA.bGo_home_InProcess := IO_KUKA.bInBit[3,0];
+//	IO_KUKA.bStandby_pos_InProcess := IO_KUKA.bInBit[3,1];
+//	IO_KUKA.bBin_pickup_InProcess := IO_KUKA.bInBit[3,2];
+//	IO_KUKA.bRA_pos1_InProcess := IO_KUKA.bInBit[3,3];
+//	IO_KUKA.bRA_pos2_InProcess := IO_KUKA.bInBit[3,4];
+//	IO_KUKA.bRA_pos3_InProcess := IO_KUKA.bInBit[3,5];
+//	IO_KUKA.bRA_pos4_InProcess := IO_KUKA.bInBit[3,6];
+//	IO_KUKA.bRA_pos5_InProcess := IO_KUKA.bInBit[3,7];
+	
+	
+//	IO_KUKA.bInBit[4,0] := IO_KUKA.PLC_I_D4.0; //208
+//	IO_KUKA.bInBit[4,1] := IO_KUKA.PLC_I_D4.1; //209
+//	IO_KUKA.bInBit[4,2] := IO_KUKA.PLC_I_D4.2; //210
+//	IO_KUKA.bInBit[4,3] := IO_KUKA.PLC_I_D4.3; //211
+//	IO_KUKA.bInBit[4,4] := IO_KUKA.PLC_I_D4.4; //212
+//	IO_KUKA.bInBit[4,5] := IO_KUKA.PLC_I_D4.5; //213
+//	IO_KUKA.bInBit[4,6] := IO_KUKA.PLC_I_D4.6; //214
+//	IO_KUKA.bInBit[4,7] := IO_KUKA.PLC_I_D4.7; //215
+	
+	
+//	IO_KUKA.bRA_pos6_InProcess := IO_KUKA.bInBit[4,0];
+//	IO_KUKA.bRA_pos7_InProcess := IO_KUKA.bInBit[4,1];
+//	IO_KUKA.bRB_pos8_InProcess := IO_KUKA.bInBit[4,2];
+//	IO_KUKA.bRB_pos9_InProcess := IO_KUKA.bInBit[4,3];
+//	IO_KUKA.bRB_pos10_InProcess := IO_KUKA.bInBit[4,4];
+//	IO_KUKA.bRB_pos11_InProcess := IO_KUKA.bInBit[4,5];
+//	IO_KUKA.bRB_pos12_InProcess := IO_KUKA.bInBit[4,6];
+//	IO_KUKA.bRC_pos13_InProcess := IO_KUKA.bInBit[4,7];
+	
+	
+//	IO_KUKA.bInBit[5,0] := IO_KUKA.PLC_I_D5.0; //216
+//	IO_KUKA.bInBit[5,1] := IO_KUKA.PLC_I_D5.1; //217
+//	IO_KUKA.bInBit[5,2] := IO_KUKA.PLC_I_D5.2; //218
+//	IO_KUKA.bInBit[5,3] := IO_KUKA.PLC_I_D5.3; //219
+//	IO_KUKA.bInBit[5,4] := IO_KUKA.PLC_I_D5.4; //220
+//	IO_KUKA.bInBit[5,5] := IO_KUKA.PLC_I_D5.5; //221
+//	IO_KUKA.bInBit[5,6] := IO_KUKA.PLC_I_D5.6; //222
+//	IO_KUKA.bInBit[5,7] := IO_KUKA.PLC_I_D5.7; //223
+	
+//	IO_KUKA.bRC_pos14_InProcess := IO_KUKA.bInBit[5,0];
+//	IO_KUKA.bRC_pos15_InProcess := IO_KUKA.bInBit[5,1];
+//	IO_KUKA.bRC_pos16_InProcess := IO_KUKA.bInBit[5,2];
+//	IO_KUKA.bRC_pos17_InProcess := IO_KUKA.bInBit[5,3];
+//	IO_KUKA.bRC_pos18_InProcess := IO_KUKA.bInBit[5,4];
+
+	
+	
+//	IO_KUKA.bInBit[6,0] := IO_KUKA.PLC_I_D6.0; //224
+//	IO_KUKA.bInBit[6,1] := IO_KUKA.PLC_I_D6.1; //225
+//	IO_KUKA.bInBit[6,2] := IO_KUKA.PLC_I_D6.2; //226
+//	IO_KUKA.bInBit[6,3] := IO_KUKA.PLC_I_D6.3; //227
+//	IO_KUKA.bInBit[6,4] := IO_KUKA.PLC_I_D6.4; //228
+//	IO_KUKA.bInBit[6,5] := IO_KUKA.PLC_I_D6.5; //229
+//	IO_KUKA.bInBit[6,6] := IO_KUKA.PLC_I_D6.6; //230
+//	IO_KUKA.bInBit[6,7] := IO_KUKA.PLC_I_D6.7; //231
+	
+//	//================================ Motion IO]]></ST>
+    </Implementation>
+    <LineIds Name="KUKAFunction_IO">
+      <LineId Id="6" Count="0" />
+      <LineId Id="411" Count="0" />
+      <LineId Id="394" Count="7" />
+      <LineId Id="413" Count="6" />
+      <LineId Id="412" Count="0" />
+      <LineId Id="421" Count="6" />
+      <LineId Id="420" Count="0" />
+      <LineId Id="429" Count="6" />
+      <LineId Id="428" Count="0" />
+      <LineId Id="402" Count="0" />
+      <LineId Id="404" Count="6" />
+      <LineId Id="452" Count="0" />
+      <LineId Id="480" Count="0" />
+      <LineId Id="488" Count="4" />
+      <LineId Id="487" Count="0" />
+      <LineId Id="494" Count="4" />
+      <LineId Id="493" Count="0" />
+      <LineId Id="532" Count="0" />
+      <LineId Id="499" Count="32" />
+      <LineId Id="475" Count="0" />
+      <LineId Id="550" Count="8" />
+      <LineId Id="560" Count="8" />
+      <LineId Id="549" Count="0" />
+      <LineId Id="257" Count="0" />
+      <LineId Id="232" Count="1" />
+      <LineId Id="321" Count="0" />
+      <LineId Id="328" Count="2" />
+      <LineId Id="576" Count="0" />
+      <LineId Id="331" Count="5" />
+      <LineId Id="574" Count="0" />
+      <LineId Id="337" Count="5" />
+      <LineId Id="578" Count="0" />
+      <LineId Id="343" Count="5" />
+      <LineId Id="579" Count="0" />
+      <LineId Id="349" Count="9" />
+      <LineId Id="326" Count="0" />
+      <LineId Id="324" Count="1" />
+      <LineId Id="320" Count="0" />
+      <LineId Id="266" Count="7" />
+      <LineId Id="289" Count="6" />
+      <LineId Id="288" Count="0" />
+      <LineId Id="297" Count="6" />
+      <LineId Id="296" Count="0" />
+      <LineId Id="305" Count="6" />
+      <LineId Id="304" Count="0" />
+      <LineId Id="393" Count="0" />
+      <LineId Id="569" Count="1" />
+      <LineId Id="250" Count="0" />
+      <LineId Id="230" Count="0" />
+      <LineId Id="7" Count="17" />
+      <LineId Id="147" Count="0" />
+      <LineId Id="136" Count="0" />
+      <LineId Id="26" Count="17" />
+      <LineId Id="161" Count="0" />
+      <LineId Id="178" Count="0" />
+      <LineId Id="162" Count="0" />
+      <LineId Id="169" Count="0" />
+      <LineId Id="172" Count="5" />
+      <LineId Id="163" Count="1" />
+      <LineId Id="179" Count="7" />
+      <LineId Id="165" Count="0" />
+      <LineId Id="44" Count="5" />
+      <LineId Id="187" Count="0" />
+      <LineId Id="50" Count="7" />
+      <LineId Id="125" Count="1" />
+      <LineId Id="59" Count="25" />
+      <LineId Id="188" Count="0" />
+      <LineId Id="85" Count="0" />
+      <LineId Id="189" Count="0" />
+      <LineId Id="86" Count="8" />
+      <LineId Id="217" Count="0" />
+      <LineId Id="190" Count="1" />
+      <LineId Id="193" Count="0" />
+      <LineId Id="196" Count="4" />
+      <LineId Id="192" Count="0" />
+      <LineId Id="218" Count="0" />
+      <LineId Id="95" Count="8" />
+      <LineId Id="214" Count="0" />
+      <LineId Id="204" Count="0" />
+      <LineId Id="206" Count="7" />
+      <LineId Id="202" Count="0" />
+      <LineId Id="104" Count="8" />
+      <LineId Id="219" Count="0" />
+      <LineId Id="215" Count="0" />
+      <LineId Id="220" Count="2" />
+      <LineId Id="225" Count="0" />
+      <LineId Id="216" Count="0" />
+      <LineId Id="226" Count="0" />
+      <LineId Id="113" Count="8" />
+      <LineId Id="5" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
