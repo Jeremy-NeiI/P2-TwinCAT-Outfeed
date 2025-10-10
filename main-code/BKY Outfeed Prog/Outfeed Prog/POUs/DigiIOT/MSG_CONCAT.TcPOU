@@ -1,0 +1,128 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="MSG_CONCAT" Id="{78d72823-65ee-44ec-87a4-335e2ecb7592}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION MSG_CONCAT : STRING(3500)
+VAR_INPUT
+	_DeviceState : ARRAY[1..14] OF DeviceAttr;
+	_SystemTime	 : STRING;
+END_VAR
+VAR
+	API_JSON		: ARRAY[1..14] OF STRING(255);
+	index			: INT;
+	success			: BOOL;
+	API_MSG			: STRING(3500);
+	sopenBracket	: STRING(13) := '{"dbLists":[';
+	
+	msg	:	STRING(3500);
+	
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+//success := CONCAT2(pSrcString1 := ADR(_text), pSrcString2 := ADR(_SystemTime), pDstString := ADR(API_JSON), nDstSize := SIZEOF(API_JSON));
+
+msg := '{"dbLists":[{"ObjectData":{"ObjectId":"';
+msg := CONCAT(msg, _DeviceState[1].DeviceID);
+msg := CONCAT(msg, '","ActionData":[{"Key":"');
+msg := CONCAT(msg, _DeviceState[1].ActionKey);
+msg := CONCAT(msg, '","Value":"');
+msg:= CONCAT(msg, USINT_TO_STRING(_DeviceState[1].ActionVal));
+msg := CONCAT(msg, '","TimeStamp":');
+msg := CONCAT(msg, _SystemTime);
+msg:= CONCAT(msg, '}],"Attributes":[{"Key":"');
+msg := CONCAT(msg, _DeviceState[1].OnlineKey);
+msg := CONCAT(msg, '","Value":"');
+msg := CONCAT(msg, USINT_TO_STRING(_DeviceState[1].OnlineVal));
+msg := CONCAT(msg, '","TimeStamp":');
+msg := CONCAT(msg, _SystemTime);
+msg := CONCAT(msg, '},{"Key":"');
+msg := CONCAT(msg, _DeviceState[1].ErrorKey);
+msg := CONCAT(msg, '","Value":"');
+msg := CONCAT(msg, USINT_TO_STRING(_DeviceState[1].ErrorVal));
+msg := CONCAT(msg, '","TimeStamp":');
+msg := CONCAT(msg, _SystemTime);
+msg:= CONCAT(msg, '}]}}]}');
+
+MSG_CONCAT := msg;
+
+
+
+//FOR index:=1 TO 1 DO 
+//	API_JSON[index] := CONCAT(API_JSON[index],'{"ObjectData":{"ObjectId":"');	
+//	API_JSON[index] := CONCAT(API_JSON[index],_DeviceState[index].DeviceID);
+//	API_JSON[index] := CONCAT(API_JSON[index],'","ActionData":[{"Key":"');
+//	API_JSON[index] := CONCAT(API_JSON[index],IO.sKUKA_Action);
+//	API_JSON[index] := CONCAT(API_JSON[index],'","Value":"');
+//	API_JSON[index] := CONCAT(API_JSON[index],IO.sAction_value);
+//	API_JSON[index] := CONCAT(API_JSON[index],'","TimeStamp":');
+//	API_JSON[index] := CONCAT(API_JSON[index],_SystemTime);
+//	API_JSON[index] := CONCAT(API_JSON[index],'}],"Attributes":[{"Key":"');
+//	API_JSON[index] := CONCAT(API_JSON[index],'Online');
+//	API_JSON[index] := CONCAT(API_JSON[index],'","Value":"');
+//	API_JSON[index] := CONCAT(API_JSON[index],IO.sKUKA_Online_val);
+//	API_JSON[index] := CONCAT(API_JSON[index],'","TimeStamp":');
+//	API_JSON[index] := CONCAT(API_JSON[index],_SystemTime);
+//	API_JSON[index] := CONCAT(API_JSON[index],'},{"Key":"');
+//	API_JSON[index] := CONCAT(API_JSON[index],'Error');
+//	API_JSON[index] := CONCAT(API_JSON[index],'","Value":"');
+//	API_JSON[index] := CONCAT(API_JSON[index],IO.sKUKA_Error_val);
+//	API_JSON[index] := CONCAT(API_JSON[index],'","TimeStamp":');
+//	API_JSON[index] := CONCAT(API_JSON[index],_SystemTime);
+//	IF index < 1 THEN
+//		API_JSON[index] := CONCAT(API_JSON[index],'}]}},');
+//	ELSE
+//		API_JSON[index] := CONCAT(API_JSON[index],'}]}}]}');
+//	END_IF
+//	success := CONCAT2(pSrcString1 := ADR(API_MSG), pSrcString2 := ADR(API_JSON[index]), pDstString := ADR(API_MSG), nDstSize := SIZEOF(API_MSG));
+//END_FOR
+//	success := CONCAT2(pSrcString1 := ADR(sopenBracket), pSrcString2 := ADR(API_MSG), pDstString := ADR(API_MSG), nDstSize := SIZEOF(API_MSG));
+//MSG_CONCAT := API_MSG;
+
+//FOR index:=1 TO 1 DO 
+//	API_JSON[index] := CONCAT(API_JSON[index],'{"ObjectData":{"ObjectId":"');	
+//	API_JSON[index] := CONCAT(API_JSON[index],_DeviceState[index].DeviceID);
+//	API_JSON[index] := CONCAT(API_JSON[index],'","ActionData":[{"Key":"');
+//	API_JSON[index] := CONCAT(API_JSON[index],_DeviceState[index].ActionKey);
+//	API_JSON[index] := CONCAT(API_JSON[index],'","Value":"');
+//	API_JSON[index] := CONCAT(API_JSON[index],USINT_TO_STRING(_DeviceState[index].ActionVal));
+//	API_JSON[index] := CONCAT(API_JSON[index],'","TimeStamp":');
+//	API_JSON[index] := CONCAT(API_JSON[index],_SystemTime);
+//	API_JSON[index] := CONCAT(API_JSON[index],'}],"Attributes":[{"Key":"');
+//	API_JSON[index] := CONCAT(API_JSON[index],_DeviceState[index].OnlineKey);
+//	API_JSON[index] := CONCAT(API_JSON[index],'","Value":"');
+//	API_JSON[index] := CONCAT(API_JSON[index],USINT_TO_STRING(_DeviceState[index].OnlineVal));
+//	API_JSON[index] := CONCAT(API_JSON[index],'","TimeStamp":');
+//	API_JSON[index] := CONCAT(API_JSON[index],_SystemTime);
+//	API_JSON[index] := CONCAT(API_JSON[index],'},{"Key":"');
+//	API_JSON[index] := CONCAT(API_JSON[index],_DeviceState[index].ErrorKey);
+//	API_JSON[index] := CONCAT(API_JSON[index],'","Value":"');
+//	API_JSON[index] := CONCAT(API_JSON[index],USINT_TO_STRING(_DeviceState[index].ErrorVal));
+//	API_JSON[index] := CONCAT(API_JSON[index],'","TimeStamp":');
+//	API_JSON[index] := CONCAT(API_JSON[index],_SystemTime);
+//	IF index < 1 THEN
+//		API_JSON[index] := CONCAT(API_JSON[index],'}]}},');
+//	ELSE
+//		API_JSON[index] := CONCAT(API_JSON[index],'}]}}]}');
+//	END_IF
+//	success := CONCAT2(pSrcString1 := ADR(API_MSG), pSrcString2 := ADR(API_JSON[index]), pDstString := ADR(API_MSG), nDstSize := SIZEOF(API_MSG));
+//END_FOR
+//	success := CONCAT2(pSrcString1 := ADR(sopenBracket), pSrcString2 := ADR(API_MSG), pDstString := ADR(API_MSG), nDstSize := SIZEOF(API_MSG));
+//MSG_CONCAT := API_MSG;
+
+]]></ST>
+    </Implementation>
+    <LineIds Name="MSG_CONCAT">
+      <LineId Id="20" Count="1" />
+      <LineId Id="109" Count="0" />
+      <LineId Id="116" Count="21" />
+      <LineId Id="110" Count="2" />
+      <LineId Id="66" Count="0" />
+      <LineId Id="68" Count="28" />
+      <LineId Id="67" Count="0" />
+      <LineId Id="22" Count="29" />
+      <LineId Id="7" Count="0" />
+      <LineId Id="65" Count="0" />
+      <LineId Id="64" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
