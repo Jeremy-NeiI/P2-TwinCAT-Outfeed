@@ -73,10 +73,10 @@ IF IO.fbClient_ASRS.bConnected THEN
 END_IF
 
 IF (NOT IO.bConv1_In OR NOT IO.bReCyl1_State_Extend) AND NOT IO_Conveyor.bReceiving_InProcess AND NOT IO_Conveyor.bEnd_InProcess AND NOT IO_Conveyor.bKUKA_InProcess AND IO.bAutoMode THEN
-	IO.sSend_msg := IO.Receiving_Open_Msg;
+	IO.sSend_msg := IO.Receiving_Open_Msg;		// '100  00  0000#NUL'
 	
 ELSIF NOT IO.bAutoMode THEN
-	IO.sSend_msg := IO.Receiving_Closed_Msg;
+	IO.sSend_msg := IO.Receiving_Closed_Msg;	// '000  00  0000#NUL'
 
 ELSIF (IO.bConv1_In OR IO.bReCyl1_State_Extend) AND NOT IO_Conveyor.bReceiving_InProcess AND NOT IO_Conveyor.bEnd_InProcess AND NOT IO_Conveyor.bKUKA_InProcess THEN
 	IO.sSend_msg := IO.Receiving_Closed_Msg;

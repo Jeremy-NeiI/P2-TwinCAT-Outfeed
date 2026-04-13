@@ -118,7 +118,7 @@ CASE iSTEP OF
 	
 	// ================  CHECK FOR MSG SENT COMPLETE TO WCS  ================
 	4:	IF IO_Conveyor.bScanner_Process_Complete THEN
-			IO.sendID_start := FALSE;
+		//	IO.sendID_start := FALSE;
 			sSend_msg := '';
 			iSTEP := iSTEP + 1 ;
 		END_IF
@@ -126,7 +126,7 @@ CASE iSTEP OF
 	// ================  RESET STATUS  ================
 	5: Timer2(IN:= TRUE, PT := T#0.5S);
 		IF Timer2.Q THEN
-			IO.sendID_start := FALSE;
+			//IO.sendID_start := FALSE;
 			IO_Conveyor.bBinID_Sent := FALSE;
 			IO_Conveyor.bSendID_Complete := FALSE;
 			IO_Conveyor.bScanner_Process_Complete := FALSE;
@@ -170,7 +170,7 @@ CASE iSTEP OF
 		END_IF	
 		
 	9:	IF IO_Conveyor.bRack_Loc_Received THEN
-			IO.sSend_msg := IO.PLC_Ack_Msg;
+			IO.sSend_msg := IO.PLC_Ack_Msg;	// '000  00  0000#NUL'
 			iSTEP := iSTEP + 1;
 		END_IF	
 	
