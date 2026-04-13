@@ -59,7 +59,7 @@
 		</System>
 		<Plc>
 			<Project GUID="{D99FC5B9-EA30-472F-8367-EDA613207FB9}" Name="Outfeed Prog" PrjFilePath="Outfeed Prog\Outfeed Prog.plcproj" TmcFilePath="Outfeed Prog\Outfeed Prog.tmc" ReloadTmc="true" AmsPort="851" FileArchiveSettings="#x000e" SymbolicMapping="true">
-				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="Outfeed Prog\Outfeed Prog.tmc" TmcHash="{64841283-889A-F700-E9C5-E79F01D6A3A6}">
+				<Instance Id="#x08502000" TcSmClass="TComPlcObjDef" KeepUnrestoredLinks="2" TmcPath="Outfeed Prog\Outfeed Prog.tmc" TmcHash="{471B6189-C485-EA29-F87D-49083C5EFA60}">
 					<Name>Outfeed Prog Instance</Name>
 					<CLSID ClassFactory="TcPlc30">{08500001-0000-0000-F000-000000000064}</CLSID>
 					<Vars VarGrpType="1">
