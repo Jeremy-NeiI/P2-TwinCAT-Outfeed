@@ -1,0 +1,268 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <GVL Name="IO" Id="{4c8f9a99-b738-4a31-8130-e8bb09c2e253}">
+    <Declaration><![CDATA[{attribute 'qualified_only'}
+VAR_GLOBAL PERSISTENT
+	fileOpen			: UINT;
+	fileclose			: UINT;
+	filecomplete		: UINT;
+	fileerror			: UINT;
+END_VAR
+
+VAR_GLOBAL
+iRackLocation 	:	INT := 0;
+
+sendID_start	:	BOOL := FALSE;
+//======================== Logs Section =================================================================
+// Create this Folder to store log
+fbBlinker			: FB_Blinker ;
+
+Log_Directory 		: 	STRING := '\Desktop\TEST_LOG\LOG\';
+LogProcess			:	FB_Logging;
+TempLog				:	ARRAY[0..100] OF STRING ;
+TempLog_Counter		:	INT := 0;
+		
+bStartup_State		:	BOOL := TRUE;
+bSystem_Enabled		:	BOOL := FALSE;
+bOperational_State	: 	BOOL := FALSE;
+bEstop_State		: 	BOOL := FALSE;
+
+bInitial_startup	:	BOOL := FALSE;
+bAutoMode			:	BOOL := FALSE;
+bManualMode			:	BOOL := FALSE;
+bConv_Ready			:	BOOL := FALSE;
+bConv_Init_Ready	: 	BOOL := FALSE;
+bConv_Init_Cmd 		: 	BOOL := FALSE;
+bPre_AutoMode		: 	BOOL := FALSE;
+bSystem_standby		:	BOOL := FALSE;
+
+bReset_ScnrPwr_Cmd	:	BOOL := FALSE;
+Scn_Reset_Complete	:	BOOL := FALSE;
+bRe_run_Fire		:	BOOL := FALSE;
+
+bInterrupt_State	: 	BOOL := FALSE	;
+
+//============================================================ Device Input =================================================================
+//*************** Button Input ****************
+bEstop						AT %I* : BOOL ;	//I101
+bStart						AT %I* : BOOL ;	//I102
+bStop						AT %I* : BOOL ;	//I103
+bReset						AT %I* : BOOL ; //I104
+
+//*************** Motor Input******************
+bOverload1					AT %I* : BOOL ;	//I105
+bOverload2					AT %I* : BOOL ;	//I106
+bOverload3					AT %I* : BOOL ;	//I107
+bOverload4					AT %I* : BOOL ;	//I108
+		
+//*************** Conveyor Sensor Input ******************
+bConv1_In					AT %I* : BOOL ;	//I109
+bConv1_Out					AT %I* : BOOL ;	//I110
+bConv2_In					AT %I* : BOOL ;	//I111
+bConv2_Out					AT %I* : BOOL ;	//I112
+bConv3_In					AT %I* : BOOL ; //I113
+bConv3_Out					AT %I* : BOOL ; //I114
+bConv4_In					AT %I* : BOOL ; //I115
+bConv4_Out					AT %I* : BOOL ;	//I116
+
+//*************** ACtuator Sensor Input ******************
+bReCyl1_State_Extend		AT %I* : BOOL ;	//I201
+bReCyl1_State_Retract		AT %I* : BOOL ;	//I202	
+bEndCyl1_State_Extend		AT %I* : BOOL ;	//I203
+bEndCyl1_State_Retract		AT %I* : BOOL ; //I204
+bAlCyl1_State_Extend		AT %I* : BOOL ;	//I205
+bAlCyl1_State_Retract		AT %I* : BOOL ;	//I206
+
+//*************** Others Input ****************
+bPressureOK					AT %I* : BOOL ; //I207
+bManualToggle				AT %I* : BOOL ; //I208 	
+
+bButton						AT %I* : BOOL ; //I216 	
+		
+//============================================================= Device Output =================================================================
+		
+//*************** Towerlight Output ******************	
+bRedLight					AT %Q* : BOOL ;	//Q101
+bYellowLight				AT %Q* : BOOL ;	//Q102
+bGreenLight					AT %Q* : BOOL ;	//Q103
+bBuzzer						AT %Q* : BOOL ;	//Q104
+
+//*************** Motor Output ******************		 
+bMotor1						AT %Q* : BOOL ;	//Q105
+bMotor2						AT %Q* : BOOL ;	//Q106
+bMotor3						AT %Q* : BOOL ;	//Q107
+bMotor4						AT %Q* : BOOL ;	//Q108
+
+//======================== ACtuator Output ========================		
+bReCyl_Ext					AT %Q* : BOOL ;	//Q109
+bReCyl_Ret					AT %Q* : BOOL ;	//Q110
+bEndCyl_Ext					AT %Q* : BOOL ;	//Q111
+bEndCyl_Ret					AT %Q* : BOOL ;	//Q112
+bAlCyl_Ext					AT %Q* : BOOL ;	//Q113
+bAlCyl_Ret					AT %Q* : BOOL ;	//Q114
+
+//======================== ACtuator Output ========================		
+
+bScanner_PowerState			AT %Q* : BOOL; //Q115
+
+//=========================================================== Conv Section Variables =================================================================
+		
+fbConv1		:	FB_Conv1	;	//FB for conv_section 1
+fbConv2		:	FB_Conv2	;	//FB for conv_section 2
+fbConv3		:	FB_Conv3	;	//FB for conv_section 3
+fbConv4		:	FB_Conv4	;	//FB for conv_section 4	
+fbKeyence	:	FB_Keyence;		//FB for scanner
+
+//======================== Data Shifting =================================================================
+
+sbinID_Received		:	STRING	;
+abinID_Set			:	ARRAY[1..8] OF STRING := ['', '', '', '', '', '', '', ''] ;
+sbinID_Scanner		:	STRING ;
+bBin_invi1		:	BOOL := FALSE;
+bBin_invi2		:	BOOL := FALSE;
+bBin_invi3		:	BOOL := FALSE;
+bBin_invi4		:	BOOL := FALSE;
+bBin_invi5		:	BOOL := FALSE;
+bBin_invi6		:	BOOL := FALSE;
+bBin_invi7		:	BOOL := FALSE;
+bBin_invi8		:	BOOL := FALSE;
+
+//======================== TCP/IP Variables =================================================================
+
+fbKUKA_Main					:	FB_KUKA_MAIN;
+fbWCS_MsgPush				:	FB_WCS_MsgPush;
+fbWCS_MsgHandler			:	FB_WCS_MsgHandler;
+fbWCS_EndProcess			:	FB_WCS_EndProcess;
+fbWCS_Receiving				:	FB_WCS_Receiving;
+
+//=============Outfeed WCS to PLC Comms===================
+bWait_dropoff_request	: BOOL := FALSE;
+bWait_dropoff_complete	: BOOL := FALSE;
+bWait_dropoff_ack		: BOOL := FALSE;
+bScan_complete			: BOOL := FALSE;
+bBinid_msg_prepped		: BOOL := FALSE;
+bWait_racklocation		: BOOL := FALSE;
+bWait_WCSKUKA_ack		: BOOL := FALSE;
+bWait_KUKA_complete		: BOOL := FALSE;
+bWait_EndAck_complete	: BOOL := FALSE;
+
+
+
+RequestTo_DropTask 				: INT := 0;
+RequestTo_DropOff 				: INT := 1;
+DropOff_Complete 				: INT := 2;
+QRCode_Approve					: INT := 3;
+Kuka_RackLocation				: INT := 4;
+Receive_KukaRackInsertComplete	: INT := 5;
+	
+fbCloseAll				: 	FB_SocketCloseAll ;
+bInitialize				: 	BOOL := FALSE;
+data_send_flag 			: 	BOOL := FALSE;
+sMsg					: 	STRING := '';
+sSend_msg				: 	STRING := '';
+sReceived_msg			: 	STRING := '';
+aReceived_msg_array		:	ARRAY[0..19] OF STRING;
+iReceived_Message_data	:	INT;
+sReceived_msg_data		:	STRING := '';	
+
+bScan_Fire				: 	BOOL := FALSE;	
+sCam_msg				: 	STRING := '';	
+sCam_Received_msg		:	STRING := '';
+sWCS_msg				:	STRING := 'null';
+sReceiving_msg			:	STRING := 'null';
+sEndProcess_msg			:	STRING := 'null';
+
+bScan_test				:	BOOL := FALSE;
+sTest_msg				:	STRING := '';
+sReceived_TestMsg		:	STRING := 'null';
+
+
+sSrvNetID				: 	T_AmsNetID	:= '';
+bScannerEnable			: 	BOOL 			:= TRUE;
+bLaserEnable			: 	BOOL 			:= TRUE;
+bLog					: 	BOOL			:= TRUE;
+
+sEndProcess_binID		:	STRING := '';
+sInfeed_binID			:	STRING(20);
+sOutfeed_binID			:	STRING(20);
+sClean_binID			:	STRING := '';
+uiScanSeq				:	UDINT := 0;
+
+
+sTest_BinID				:	STRING := 'YI-12345' ;
+sEmpty_BinID			:	STRING := '';
+
+fbClient_QR 			: 	FB_Client	:= (	sRemoteHost := '10.0.130.32' ,
+									nRemotePort := 9004,
+									sPrefix := '' ,
+								    bEnable	:= TRUE);
+										 
+fbClient_ASRS 			: 	FB_Client	:= (	sRemoteHost := '10.0.130.26' ,
+									nRemotePort := 6511, 
+									sPrefix := '' ,
+									bEnable	:= TRUE);
+//10.0.130.26 : 6511  wcs server								
+//10.0.120.137 : 9004	laptop	
+//192.168.100.15 : 9004  pc
+
+// ================================================  Postman Comms
+MES_host					:	STRING := '10.0.110.19';
+MES_port					:	UINT := 8000;
+MES_uri						:	STRING := '/api/overview/outfeed/box'; 
+sMES_binID					:	STRING(3000);
+sReceiving_binID			:	STRING(3000);
+bPostman_get				:	BOOL := FALSE;
+
+
+// ================================================  DigiIOT Comms
+DIGI_MSG	:	STRING(3000);
+
+SystemTime : STRING;
+DeviceState : ARRAY[1..14] OF DeviceAttr;
+KR_Action	: ARRAY[1..14] OF STRING;
+KR_Error	: ARRAY[1..14] OF USINT;
+KR_Online	: ARRAY[1..14] OF USINT;
+
+API_MSG : STRING(3500);
+
+sKUKA_Online_val	:	STRING := '0';
+sKUKA_Error_val		:	STRING := '0';
+sKUKA_Action	:	STRING := 'Home';
+sAction_value	:	STRING := '0';
+
+sActionkey	:	STRING(20) := '';
+iActionval	:	USINT := 0;
+				
+END_VAR
+
+VAR_GLOBAL CONSTANT
+	PLCPRJ_BUFFER_SIZE						: UDINT := 1000;	(* Max. internal fifo/receiver buffer size *)
+
+	PLCPRJ_CLIENT_SEND_CYCLE_TIME			: TIME := T#1S;
+	PLCPRJ_RECEIVE_POLLING_TIME				: TIME := T#100MS;
+	PLCPRJ_RECEIVE_TIMEOUT					: TIME := T#600S;
+
+	(* Some project specific error codes *)
+	PLCPRJ_ERROR_RECEIVE_TIMEOUT			: UDINT := 16#8101;	(* Receive timeout *)
+	PLCPRJ_ERROR_SENDFIFO_OVERFLOW			: UDINT := 16#8102;	(* Send fifo overflow *)
+	PLCPRJ_ERROR_RECFIFO_OVERFLOW			: UDINT := 16#8103;	(* Receive fifo overflow *)
+		
+	QR_Read_ON								: STRING := CONCAT('LON','$R')  ;
+	QR_Read_OFF								: STRING := CONCAT('LOFF','$R') ;
+	QR_Reset								: STRING := CONCAT('RESET','$R') ;
+	
+	PLC_Ack_Msg								: STRING := '000                    00                    0000';
+	Receiving_Open_Msg						: STRING := '100                    00                    0000';
+	Receiving_Closed_Msg					: STRING := '000                    00                    0000';
+	DropTask_Msg							: STRING := '10000000000$R';
+	DropOff_Msg								: STRING := '01000000000$R';
+	DropOff_Complete_Msg					: STRING := '01100000000$R';
+	WCS_Ack_Msg								: STRING := '00000000000$R';
+	
+	QR_Approve_Msg							: STRING := '00010000000$R';
+	KUKA_Complete_Ack_Msg					: STRING := '00000010000$R';
+	KUKA_Complete_Ack_Msg_v2				: STRING := '01000010000$R';
+	
+END_VAR]]></Declaration>
+  </GVL>
+</TcPlcObject>

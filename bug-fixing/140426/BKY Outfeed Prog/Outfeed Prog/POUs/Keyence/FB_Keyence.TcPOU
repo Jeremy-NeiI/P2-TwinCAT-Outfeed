@@ -1,0 +1,148 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="FB_Keyence" Id="{da377b05-08b8-477a-a98a-0f7a26e404a9}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_Keyence
+VAR_INPUT
+END_VAR
+VAR_OUTPUT
+	Outfeed_Complete				: BOOL	;
+	bResetData						: BOOL;
+	
+END_VAR
+VAR
+	rNewRx	:	R_TRIG;
+	Cam_Timeout							: TON ;
+	log_true						: INT := 0;
+END_VAR]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[
+rNewRx(CLK := IO.fbClient_QR.fbRx.sPut <> 'null');
+
+IF IO.fbClient_QR.bConnected THEN
+	IF IO.bScan_Fire THEN
+		IO.fbClient_QR.fbRx.sPut := 'null';
+		IO_Conveyor.bScan_Start := TRUE;
+		IO.sCam_msg := IO.QR_Read_ON;
+		IO.fbClient_QR.fbTx.AddTail( sPut := IO.sCam_msg); //$R = Carriage Return [CR]
+		IO.bScan_Fire := FALSE;
+	END_IF
+END_IF	
+
+// ---- Watchdog runs only while ARMED ----
+IF IO_Conveyor.bScan_Start THEN
+    Cam_Timeout(IN := TRUE, PT := T#5S);
+ELSE
+    Cam_Timeout(IN := FALSE);
+END_IF
+
+// If we timed out waiting for a frame → this is a FAIL (only now!)
+IF Cam_Timeout.Q THEN
+    IO_Conveyor.bScan_ERROR  := TRUE;
+    IO_Conveyor.bScan_Failed := TRUE;
+    IO_Conveyor.bScan_Start  := FALSE;
+    IO.fbClient_QR.fbRx.sPut := 'null';         // consume anything
+END_IF
+
+// Handle a frame **once** when it first appears
+IF rNewRx.Q THEN
+    IO.sCam_Received_msg := IO.fbClient_QR.fbRx.sPut;
+    IF LEFT(IO.sCam_Received_msg, 3) = 'YI-' THEN
+        IO.sClean_binID   := LEFT(IO.sCam_Received_msg, LEN(IO.sCam_Received_msg) - 1);
+        IO.sOutfeed_binID := IO.sClean_binID;
+        IO.uiScanSeq := IO.uiScanSeq + 1;        // <-- increments once per NEW frame
+        IO_Conveyor.bScan_Start    := FALSE;
+        IO_Conveyor.bScan_Complete := TRUE;
+		IO_Conveyor.bScan_ERROR  := FALSE;        // (your code had := FALSE by mistake)
+        IO_Conveyor.bScan_Failed := FALSE;
+		Cam_Timeout(IN := FALSE);
+		
+//    ELSIF LEFT(IO.sCam_Received_msg, 3) <> 'YI-' OR Cam_Timeout.Q THEN
+//        IO_Conveyor.bScan_ERROR  := TRUE;        // (your code had := FALSE by mistake)
+//        IO_Conveyor.bScan_Failed := TRUE;
+//        IO_Conveyor.bScan_Start  := FALSE;
+    END_IF
+
+    // **Consume** the frame so we don't re-parse next cycle
+    IO.fbClient_QR.fbRx.sPut := 'null';
+END_IF
+
+
+//IF IO.fbClient_QR.fbRx.sPut <> 'null' THEN
+//	IO.sCam_Received_msg := IO.fbClient_QR.fbRx.sPut;
+//	IF LEFT(IO.sCam_Received_msg, 3) = 'YI-' THEN
+//		IO.sClean_binID := LEFT(IO.sCam_Received_msg, LEN(IO.sCam_Received_msg) - 1 );
+//		IO.sOutfeed_binID := IO.sClean_binID;
+//		IO.uiScanSeq := IO.uiScanSeq + 1;
+//		IO_Conveyor.bScan_Start := FALSE;
+//		IO_Conveyor.bScan_Complete := TRUE;
+//	ELSIF LEFT(IO.sCam_Received_msg, 3) <> 'YI-' OR Cam_Timeout.Q THEN
+//		IO_Conveyor.bScan_ERROR := FALSE;
+//		IO_Conveyor.bScan_Failed := TRUE;
+////	ELSIF Cam_Timeout.Q THEN
+////		IO_Conveyor.bScan_ERROR := TRUE;
+////		IO.sClean_binID := LEFT(IO.sCam_Received_msg, LEN(IO.sCam_Received_msg) - 1 );
+////		IO.sOutfeed_binID := IO.sClean_binID;	
+////		bResetData := TRUE;
+//	END_IF
+//END_IF
+
+
+IF bResetData THEN
+	IO.sCam_msg := '';
+	bResetData := FALSE;
+	IO.sCam_Received_msg := '';
+END_IF
+
+//Cam_Timeout(IN:= IO_Conveyor.bScan_Start, PT:= T#5S,);
+
+]]></ST>
+    </Implementation>
+    <LineIds Name="FB_Keyence">
+      <LineId Id="1074" Count="1" />
+      <LineId Id="1070" Count="0" />
+      <LineId Id="1159" Count="7" />
+      <LineId Id="21" Count="0" />
+      <LineId Id="1168" Count="0" />
+      <LineId Id="1170" Count="4" />
+      <LineId Id="1169" Count="0" />
+      <LineId Id="1175" Count="6" />
+      <LineId Id="1167" Count="0" />
+      <LineId Id="1071" Count="0" />
+      <LineId Id="1078" Count="2" />
+      <LineId Id="1082" Count="2" />
+      <LineId Id="1086" Count="0" />
+      <LineId Id="1088" Count="1" />
+      <LineId Id="1182" Count="2" />
+      <LineId Id="1099" Count="0" />
+      <LineId Id="1091" Count="7" />
+      <LineId Id="1072" Count="1" />
+      <LineId Id="774" Count="0" />
+      <LineId Id="773" Count="0" />
+      <LineId Id="109" Count="0" />
+      <LineId Id="357" Count="0" />
+      <LineId Id="687" Count="0" />
+      <LineId Id="758" Count="0" />
+      <LineId Id="1012" Count="0" />
+      <LineId Id="755" Count="0" />
+      <LineId Id="951" Count="1" />
+      <LineId Id="1011" Count="0" />
+      <LineId Id="953" Count="0" />
+      <LineId Id="749" Count="0" />
+      <LineId Id="756" Count="0" />
+      <LineId Id="760" Count="1" />
+      <LineId Id="759" Count="0" />
+      <LineId Id="686" Count="0" />
+      <LineId Id="796" Count="0" />
+      <LineId Id="893" Count="0" />
+      <LineId Id="498" Count="0" />
+      <LineId Id="613" Count="0" />
+      <LineId Id="617" Count="1" />
+      <LineId Id="679" Count="0" />
+      <LineId Id="615" Count="0" />
+      <LineId Id="753" Count="0" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="871" Count="0" />
+      <LineId Id="870" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

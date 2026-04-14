@@ -1,0 +1,412 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="FB_WCS_EndProcess" Id="{d2464e81-9f57-46d8-816b-db2a1addb29d}" SpecialFunc="None">
+    <Declaration><![CDATA[FUNCTION_BLOCK FB_WCS_EndProcess
+VAR_INPUT
+	bKUKA_JobDone					: BOOL := TRUE	;
+//	bFire_scanner					: BOOL ;
+	sWCS_msg						: STRING;
+END_VAR
+VAR_OUTPUT
+	Outfeed_Complete				: BOOL	:= FALSE ;
+	sKuka_RackLocation				: STRING	;
+	iKuka_RackLocation				: INT := 0	;
+	
+END_VAR
+VAR
+	
+	lastSeq		:	UDINT := 0;
+	sBintoSend	:	STRING(32) := '';
+	rtSendStart	:	R_TRIG;
+
+
+	iSTEP 							: INT := 0;
+	i 								: INT ;
+	j 								: INT ;
+	sLastBin						: STRING := 'null';
+//=============Outfeed: PLC to WCS Comms===================
+	ReadyTo_DropTask				: INT := 0;
+	ReadyFor_DropOff				: INT := 0;
+	Receive_DropOffComplete			: INT := 0;
+	Request_KukaRackLocation 		: INT := 0;
+	KukaRack_InsertComplete 		: INT := 0;
+//=============Infeed: PLC to WCS Comms===================
+	BinReadyAtPickupZone 			: INT := 0;
+	ReadyToPickup 					: INT := 0;
+	ReceivePickupComplete 			: INT := 0;
+	BinHeight						: INT := 0;
+	
+	//=============Outfeed: WCS to PLC Comms===================
+	RequestTo_DropTask 				: INT := 0;
+	RequestTo_DropOff 				: INT := 1;
+	DropOff_Complete 				: INT := 2;
+	QRCode_Approve					: INT := 3;
+	Kuka_Num1						: INT := 4;
+	Kuka_Num2						: INT := 5;
+	Receive_KukaRackInsertComplete	: INT := 6;
+//=============Infeed: WCS to PLC Comms====================
+	CheckQRCodeID 					: INT := 7;
+	ReceiveBinReadyAtPickupZone 	: INT := 8;
+	RequestPickup 					: INT := 9;
+	PickupComplete 					: INT := 10;
+	
+	bInsert_binID					: BOOL := FALSE;
+	bWith_ScanID					: BOOL := FALSE;
+	returnLen 						: INT;
+	bOnly_Blank						: BOOL;
+	
+	bDrop_Request					: BOOL ;
+	Run_Comms						: BOOL := FALSE;
+	bMsg_notEmpty 					: BOOL;
+	resetData 						: BOOL := FALSE;
+	
+	data_send_flag 					: BOOL := FALSE;
+	sSend_msg						: STRING;
+	sReceived_msg					: STRING := '';
+	aReceived_msg_array				: ARRAY[0..19] OF STRING;
+	iReceived_Message_data			: INT;
+	sReceived_msg_data				: STRING := '';
+	Outfeed_binID					: STRING(255);
+	Timer1							: TON;
+	Timer2							: TON;
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[rtSendStart(CLK := IO.sendID_start);
+
+CASE iSTEP OF
+	
+	// ================  RECEIVE SCANNER BINID FROM KEYENCE ================
+	0:	
+		IF rtSendStart.Q AND (IO.uiScanSeq <> lastSeq) AND NOT IO_Conveyor.bReceiving_InProcess AND NOT IO_Conveyor.bKUKA_Job_Start THEN
+			sBintoSend := IO.sEndProcess_binID;
+			lastSeq := IO.uiScanSeq;
+			IO_Conveyor.bEnd_InProcess := TRUE;
+			IO.bScan_complete := TRUE;
+			iSTEP := iSTEP + 1;
+		END_IF	
+
+//		IF IO.sendID_start AND NOT IO_Conveyor.bReceiving_InProcess AND NOT IO_Conveyor.bKUKA_Job_Start THEN
+//			sLastbin := IO.sOutfeed_binID;
+//			IO_Conveyor.bEnd_InProcess := TRUE;
+//			IO.bScan_complete := TRUE;
+//			iSTEP := iSTEP + 1;
+//		END_IF
+	
+	// ================  PREP BINID + REQUEST FOR KUKA RACK LOCATION  ================
+	1:	Timer1(IN:= TRUE, PT := T#0.5S);
+		IF Timer1.Q THEN
+			Request_KukaRackLocation := 1;
+			bInsert_binID := TRUE;	
+			bWith_ScanID := TRUE;
+			Timer1(IN := FALSE);
+			iSTEP := iSTEP + 1 ;
+		END_IF	
+	
+	// ================  SEND PREP MSG ================
+	2:	IF NOT IO_Conveyor.bReceiving_InProcess AND NOT IO_Conveyor.bKUKA_Job_Start THEN
+			data_send_flag := TRUE ;
+			IO_Conveyor.bBinID_Sent := TRUE;
+			IO.BWait_racklocation := TRUE;
+			iSTEP := iSTEP + 1 ;
+		END_IF
+		
+	// ================  RESET DATA FOR JOB ACK  ================
+	3:	resetData := TRUE;
+		IO.sOutfeed_binID := '';
+		IO_Conveyor.bSendID_Complete := TRUE;
+		IO_Conveyor.bScan_Start := FALSE;
+		iSTEP := iSTEP + 1 ;
+	
+	// ================  CHECK FOR MSG SENT COMPLETE TO WCS  ================
+	4:	IF IO_Conveyor.bScanner_Process_Complete THEN
+		//	IO.sendID_start := FALSE;
+			sSend_msg := '';
+			iSTEP := iSTEP + 1 ;
+		END_IF
+	
+	// ================  RESET STATUS  ================
+	5: Timer2(IN:= TRUE, PT := T#0.5S);
+		IF Timer2.Q THEN
+			//IO.sendID_start := FALSE;
+			IO_Conveyor.bBinID_Sent := FALSE;
+			IO_Conveyor.bSendID_Complete := FALSE;
+			IO_Conveyor.bScanner_Process_Complete := FALSE;
+			Timer2(IN := FALSE);
+			iSTEP := iSTEP + 1 ;
+		END_IF
+		
+	// ================  WAIT FOR KUKA RACK LOCAIION RESPONSE FROM WCS  ================	
+	6:	IF IO.sEndProcess_msg <> 'null' AND NOT IO_Conveyor.bReceiving_InProcess THEN
+			FOR  i := 0 TO LEN(IO.sEndProcess_msg) DO
+				aReceived_msg_array[i] := F_TOCHR(IO.sEndProcess_msg[i]);		
+			END_FOR
+				//resetData := TRUE;
+			iSTEP := iSTEP + 1;
+		END_IF	
+	
+	7:	iReceived_Message_data := STRING_TO_INT(aReceived_msg_array[QRCode_Approve]) ;
+			CASE iReceived_Message_data OF
+	 			
+			//Next step
+			1 : iSTEP := iSTEP + 1 ;
+			
+			ELSE//add in univeral error step*********************
+				iSTEP := 6 ; //for error handling step
+			END_CASE 
+			
+	// ================================================  kuka rack location processing
+	8:	sKuka_RackLocation := CONCAT((aReceived_msg_array[Kuka_Num1]), (aReceived_msg_array[Kuka_Num2]));
+		iKuka_RackLocation := STRING_TO_INT(sKuka_RackLocation);
+		IF iKuka_RackLocation = 0 OR iKuka_RackLocation > 18 THEN
+			iSTEP := 6;
+		ELSIF iKuka_RackLocation <= 18 THEN
+			IO.BWait_racklocation := FALSE;
+			IO.iRackLocation := iKuka_RackLocation;
+			IO_Conveyor.bRack_Loc_Received := TRUE;
+			IO_Conveyor.bKUKA_Rack_Request := FALSE;
+			//IO_Conveyor.bEnd_InProcess := FALSE;
+			//IO_Conveyor.bBinID_Sent := FALSE;
+			IO.sEndProcess_msg := 'null';
+			iSTEP := iSTEP + 1;
+		END_IF	
+		
+	9:	IF IO_Conveyor.bRack_Loc_Received THEN
+			IO.sSend_msg := IO.PLC_Ack_Msg;	// '000  00  0000#NUL'
+			iSTEP := iSTEP + 1;
+		END_IF	
+	
+	// ================================================  wait for wcs ack msg
+	10:	IF IO.sEndProcess_msg = IO.WCS_Ack_Msg OR IO.sEndProcess_msg = IO.DropOff_Msg THEN
+			IO.sEndProcess_msg := 'null';
+			IO_Conveyor.bEnd_InProcess := FALSE;
+			iSTEP := iSTEP + 1;
+		END_IF
+		IO.bWait_WCSKUKA_ack := TRUE;		
+	
+	//TRIGGER for kuka task complete
+	11:	IF IO_Conveyor.bKUKA_Job_Done THEN
+			sSend_msg := '';
+			iSTEP := iSTEP + 1;
+		END_IF
+		IO.bWait_WCSKUKA_ack := FALSE;	
+		IO.bWait_KUKA_complete := TRUE;
+
+	//SEND "kuka rack insert COMPLETE"
+	12:	IF NOT IO_Conveyor.bReceiving_InProcess THEN
+			IO_Conveyor.bEnd_InProcess := TRUE;
+			Request_KukaRackLocation := 1;
+			KukaRack_InsertComplete := 1;
+			bInsert_binID := TRUE;
+			bWith_ScanID := TRUE;
+			sSend_msg := '';
+			data_send_flag := TRUE;
+			IO.sEndProcess_msg := 'null';
+			iSTEP := iSTEP + 1;
+		END_IF
+		IO.bWait_KUKA_complete := FALSE;
+		
+	//wait for "kuka complete ack"
+	13:	IF (IO.sEndProcess_msg = IO.KUKA_Complete_Ack_Msg OR IO.sEndProcess_msg = IO.KUKA_Complete_Ack_Msg_v2) AND NOT IO_Conveyor.bDropTask_InProcess AND NOT IO_Conveyor.bDropOff_InProcess THEN
+			sSend_msg := '';
+			IO.sSend_msg := IO.PLC_Ack_Msg;
+			IO.sEndProcess_msg := 'null';
+			iSTEP := iSTEP + 1;
+		END_IF
+		IO.bWait_EndAck_complete := TRUE; 
+		
+	//wait for "wait for wcs ack"	
+	14:	IF (IO.sEndProcess_msg = IO.WCS_Ack_Msg OR IO.sEndProcess_msg = IO.DropOff_Msg) AND NOT IO_Conveyor.bDropTask_InProcess AND NOT IO_Conveyor.bDropOff_InProcess THEN
+			IO_Conveyor.bKUKA_Job_Done := FALSE;
+			IO_Conveyor.bKUKA_Job_Start := FALSE;
+			IO_Conveyor.bEnd_InProcess := FALSE;
+			IO.fbClient_QR.fbRx.sPut := 'null';
+			IO.bWait_EndAck_complete := TRUE; 
+			resetData := TRUE;
+			sBintoSend := '';
+			iSTEP := 0 ;
+		END_IF
+		
+END_CASE
+
+//add in binid if required to insert
+IF bInsert_binID THEN 
+	IF bOnly_Blank THEN
+		Outfeed_binID := '';	
+		FOR i := LEN(Outfeed_binID) + 1 TO 20 DO
+			Outfeed_binID := CONCAT(' ', Outfeed_binID) ;
+		END_FOR
+	ELSIF bWith_ScanID THEN
+		Outfeed_binID := sBintoSend;
+		FOR i := LEN(Outfeed_binID) + 1 TO 20 DO
+			Outfeed_binID := CONCAT(' ', Outfeed_binID) ;
+		END_FOR
+//	ELSE
+//		FOR i := LEN(IO.sOutfeed_binID) + 1 TO 20 DO
+//			IO.sOutfeed_binID := CONCAT(' ', IO.sOutfeed_binID) ;
+//		END_FOR	
+	END_IF
+	
+	FOR j := LEN(IO.sInfeed_binID) + 1 TO 20 DO
+    	IO.sInfeed_binID := CONCAT(' ', IO.sInfeed_binID) ;
+	END_FOR
+	bOnly_Blank := FALSE;
+	bWith_ScanID := FALSE;
+	bInsert_binID := FALSE;
+END_IF
+
+IF data_send_flag THEN
+	//	sSend_msg := CONCAT(sSend_msg, 'sendid testing: ');
+		sSend_msg := CONCAT(sSend_msg, INT_TO_STRING(ReadyTo_DropTask));
+		sSend_msg := CONCAT(sSend_msg, INT_TO_STRING(ReadyFor_DropOff));
+		sSend_msg := CONCAT(sSend_msg, INT_TO_STRING(Receive_DropOffComplete));
+		sSend_msg := CONCAT(sSend_msg, Outfeed_binID);
+		sSend_msg := CONCAT(sSend_msg, INT_TO_STRING(Request_KukaRackLocation));
+		sSend_msg := CONCAT(sSend_msg, INT_TO_STRING(KukaRack_InsertComplete));
+		sSend_msg := CONCAT(sSend_msg, IO.sInfeed_binID);
+		sSend_msg := CONCAT(sSend_msg, INT_TO_STRING(BinHeight));
+		sSend_msg := CONCAT(sSend_msg, INT_TO_STRING(BinReadyAtPickupZone));
+		sSend_msg := CONCAT(sSend_msg, INT_TO_STRING(ReadyToPickup));
+		sSend_msg := CONCAT(sSend_msg, INT_TO_STRING(ReceivePickupComplete));
+		IO.sSend_msg := sSend_msg; 
+		IO.fbClient_ASRS.fbTx.AddTail( sPut := IO.sSend_msg); //$R = Carriage Return [CR]
+		data_send_flag := FALSE;
+//		IO.TempLog[IO.TempLog_Counter] := 'qr_start scan ENDFLAG';
+//		IO.TempLog_Counter := IO.TempLog_Counter  +1;
+END_IF
+
+
+IF resetData THEN
+	sSend_msg := '';
+	ReadyTo_DropTask := 0;
+	ReadyFor_DropOff := 0;
+	Receive_DropOffComplete := 0;
+	Request_KukaRackLocation := 0;
+	KukaRack_InsertComplete := 0;
+	BinReadyAtPickupZone := 0;
+	ReadyToPickup := 0;
+	ReceivePickupComplete := 0;
+	Outfeed_Complete := FALSE ;
+	resetData := FALSE;
+	IO.sInfeed_binID := '';
+	Outfeed_binID := '';
+END_IF
+
+IF IO_control.bReset AND IO.bManualMode THEN
+	iSTEP := 0 ;
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="FB_WCS_EndProcess">
+      <LineId Id="1064" Count="1" />
+      <LineId Id="9" Count="0" />
+      <LineId Id="916" Count="0" />
+      <LineId Id="66" Count="0" />
+      <LineId Id="70" Count="0" />
+      <LineId Id="989" Count="0" />
+      <LineId Id="992" Count="0" />
+      <LineId Id="1136" Count="0" />
+      <LineId Id="993" Count="2" />
+      <LineId Id="987" Count="1" />
+      <LineId Id="986" Count="0" />
+      <LineId Id="71" Count="0" />
+      <LineId Id="314" Count="0" />
+      <LineId Id="771" Count="0" />
+      <LineId Id="72" Count="1" />
+      <LineId Id="772" Count="0" />
+      <LineId Id="917" Count="0" />
+      <LineId Id="75" Count="0" />
+      <LineId Id="399" Count="0" />
+      <LineId Id="76" Count="0" />
+      <LineId Id="541" Count="0" />
+      <LineId Id="77" Count="0" />
+      <LineId Id="402" Count="0" />
+      <LineId Id="78" Count="1" />
+      <LineId Id="400" Count="0" />
+      <LineId Id="918" Count="0" />
+      <LineId Id="80" Count="0" />
+      <LineId Id="390" Count="0" />
+      <LineId Id="81" Count="0" />
+      <LineId Id="843" Count="0" />
+      <LineId Id="82" Count="0" />
+      <LineId Id="391" Count="0" />
+      <LineId Id="919" Count="0" />
+      <LineId Id="83" Count="6" />
+      <LineId Id="920" Count="0" />
+      <LineId Id="90" Count="2" />
+      <LineId Id="94" Count="0" />
+      <LineId Id="65" Count="0" />
+      <LineId Id="160" Count="0" />
+      <LineId Id="921" Count="0" />
+      <LineId Id="406" Count="1" />
+      <LineId Id="474" Count="0" />
+      <LineId Id="643" Count="0" />
+      <LineId Id="641" Count="0" />
+      <LineId Id="640" Count="0" />
+      <LineId Id="410" Count="0" />
+      <LineId Id="408" Count="1" />
+      <LineId Id="922" Count="0" />
+      <LineId Id="176" Count="0" />
+      <LineId Id="179" Count="7" />
+      <LineId Id="562" Count="4" />
+      <LineId Id="574" Count="0" />
+      <LineId Id="569" Count="0" />
+      <LineId Id="573" Count="0" />
+      <LineId Id="561" Count="0" />
+      <LineId Id="560" Count="0" />
+      <LineId Id="188" Count="1" />
+      <LineId Id="381" Count="0" />
+      <LineId Id="190" Count="2" />
+      <LineId Id="845" Count="0" />
+      <LineId Id="193" Count="3" />
+      <LineId Id="316" Count="0" />
+      <LineId Id="198" Count="1" />
+      <LineId Id="177" Count="0" />
+      <LineId Id="544" Count="2" />
+      <LineId Id="548" Count="0" />
+      <LineId Id="547" Count="0" />
+      <LineId Id="553" Count="0" />
+      <LineId Id="777" Count="0" />
+      <LineId Id="555" Count="1" />
+      <LineId Id="559" Count="0" />
+      <LineId Id="558" Count="0" />
+      <LineId Id="557" Count="0" />
+      <LineId Id="554" Count="0" />
+      <LineId Id="200" Count="0" />
+      <LineId Id="202" Count="3" />
+      <LineId Id="201" Count="0" />
+      <LineId Id="206" Count="0" />
+      <LineId Id="846" Count="0" />
+      <LineId Id="207" Count="3" />
+      <LineId Id="576" Count="0" />
+      <LineId Id="211" Count="6" />
+      <LineId Id="162" Count="0" />
+      <LineId Id="218" Count="0" />
+      <LineId Id="847" Count="0" />
+      <LineId Id="778" Count="0" />
+      <LineId Id="219" Count="0" />
+      <LineId Id="233" Count="2" />
+      <LineId Id="220" Count="1" />
+      <LineId Id="236" Count="0" />
+      <LineId Id="848" Count="0" />
+      <LineId Id="779" Count="0" />
+      <LineId Id="237" Count="0" />
+      <LineId Id="247" Count="2" />
+      <LineId Id="707" Count="0" />
+      <LineId Id="849" Count="0" />
+      <LineId Id="317" Count="0" />
+      <LineId Id="1066" Count="0" />
+      <LineId Id="238" Count="1" />
+      <LineId Id="163" Count="0" />
+      <LineId Id="63" Count="0" />
+      <LineId Id="96" Count="24" />
+      <LineId Id="95" Count="0" />
+      <LineId Id="123" Count="13" />
+      <LineId Id="159" Count="0" />
+      <LineId Id="137" Count="4" />
+      <LineId Id="143" Count="15" />
+      <LineId Id="122" Count="0" />
+      <LineId Id="311" Count="2" />
+      <LineId Id="310" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>

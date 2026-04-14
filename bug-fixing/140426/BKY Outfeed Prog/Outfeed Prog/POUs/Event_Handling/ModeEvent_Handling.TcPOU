@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TcPlcObject Version="1.1.0.1" ProductVersion="3.1.4024.12">
+  <POU Name="ModeEvent_Handling" Id="{5e2c25b2-c999-4350-a030-c9fcea6f14fc}" SpecialFunc="None">
+    <Declaration><![CDATA[PROGRAM ModeEvent_Handling
+VAR
+END_VAR
+]]></Declaration>
+    <Implementation>
+      <ST><![CDATA[//estop state
+IF IO.bEstop_State THEN
+	//all hardware outputs are off
+	IO_control.bMotor1 := FALSE ;
+	IO_control.bMotor2 := FALSE ;
+	IO_control.bMotor3 := FALSE ;
+	IO_control.bMotor4 := FALSE ;
+	
+	IO_HMI.bMotor1 := FALSE;
+	IO_HMI.bMotor2 := FALSE;
+	IO_HMI.bMotor3 := FALSE;
+	IO_HMI.bMotor4 := FALSE;
+	
+	IO_control.bAlcyl_ext := FALSE ;
+	IO_control.bAlcyl_ret := FALSE ;
+	IO_control.bRecyl_ext := FALSE ;
+	IO_control.bRecyl_ret := FALSE ;
+	IO_control.bEndcyl_ext := FALSE ;
+	IO_control.bEndcyl_ret := FALSE ;
+	
+	IO_HMI.bAlcyl_ext := FALSE;
+	IO_HMI.bAlcyl_ret := FALSE;
+	IO_HMI.bRecyl_ext := FALSE;
+	IO_HMI.bRecyl_ret := FALSE;
+	IO_HMI.bEndcyl_ext := FALSE;
+	IO_HMI.bEndcyl_ret := FALSE;
+	
+	IF IO_control.bReset AND IO_control.bManualToggle THEN
+		IO_control.bRedlight := FALSE ;
+		IO_control.bBuzzer := FALSE ;
+		IO.bEstop_State := FALSE ;
+		IO.bAutoMode := FALSE ;
+	END_IF
+END_IF
+
+//halt state
+IF IO_control.bStop  OR IO.bInterrupt_State THEN
+	IO.bInterrupt_State := TRUE ;
+	IF IO_control.bStart AND IO.bAutoMode THEN
+		IO.bInterrupt_State := FALSE ;
+	END_IF
+	
+	IF NOT IO_control.bManualToggle AND IO_control.bReset THEN
+		IO.bInterrupt_State := FALSE ;	
+	END_IF	
+END_IF]]></ST>
+    </Implementation>
+    <LineIds Name="ModeEvent_Handling">
+      <LineId Id="36" Count="0" />
+      <LineId Id="6" Count="5" />
+      <LineId Id="60" Count="0" />
+      <LineId Id="62" Count="3" />
+      <LineId Id="61" Count="0" />
+      <LineId Id="29" Count="5" />
+      <LineId Id="66" Count="3" />
+      <LineId Id="35" Count="0" />
+      <LineId Id="70" Count="0" />
+      <LineId Id="72" Count="0" />
+      <LineId Id="71" Count="0" />
+      <LineId Id="16" Count="0" />
+      <LineId Id="55" Count="1" />
+      <LineId Id="13" Count="2" />
+      <LineId Id="5" Count="0" />
+      <LineId Id="37" Count="0" />
+      <LineId Id="18" Count="1" />
+      <LineId Id="24" Count="0" />
+      <LineId Id="21" Count="2" />
+      <LineId Id="45" Count="1" />
+      <LineId Id="49" Count="0" />
+      <LineId Id="48" Count="0" />
+      <LineId Id="17" Count="0" />
+    </LineIds>
+  </POU>
+</TcPlcObject>
