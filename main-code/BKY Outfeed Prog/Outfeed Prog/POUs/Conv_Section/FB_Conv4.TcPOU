@@ -8,7 +8,6 @@ END_VAR
 VAR_OUTPUT
 END_VAR
 VAR
-	bSendID_fired		:	BOOL := TRUE;
 	icounter			:	int := 0;
 	iSTEP				:	INT := 0;
 	Set_Motor			:	BOOL	;
@@ -237,14 +236,7 @@ CASE iSTEP OF
 	// ================  SEND BIN ID INFO TO WCS COMMS  ================ 	
 	11: IF NOT IO_Conveyor.bReceiving_InProcess AND NOT IO_Conveyor.bKUKA_Job_Start THEN
 			IO_Conveyor.bEnd_InProcess := TRUE; 
-			
-			IF NOT bSendID_fired THEN
-				IO.sendID_start := TRUE;
-				bSendID_fired := TRUE;
-			ELSE
-				bSendID_fired := FALSE;
-			END_IF
-			
+			IO.sendID_start := TRUE;
 			IF IO_Conveyor.bBinID_Sent AND IO_Conveyor.bSendID_Complete THEN
 				IO_Conveyor.bScanner_Process_Complete := TRUE;
 				IO_Conveyor.bScan_Complete := FALSE;
@@ -291,9 +283,11 @@ CASE iSTEP OF
 	
 	// ================  IF SCAMMING FAILED TO GET BIN ID  ================ 
 	20: IF IO_Conveyor.bScan_Failed THEN
-			//turn scanner off
+//			IO_control.bGreenlight := FALSE;
+//			IO_control.bRedlight := IO.fbBlinker.LightOutput;
+//			IO_control.bBuzzer := TRUE;
+			IO.bScan_Fire := TRUE;
 			IO.sCam_msg := IO.QR_Read_OFF;
-			IO.fbClient_QR.fbTx.AddTail( sPut := IO.sCam_msg);
 			iSTEP := iSTEP +1;
 		END_IF
 	
@@ -302,10 +296,11 @@ CASE iSTEP OF
 		END_IF
 		
 	22:	IO.fbClient_QR.fbRx.sPut := 'null';
+//		IO_control.bGreenlight := TRUE;
+//		IO_control.bRedlight := FALSE;
+//		IO_control.bBuzzer := FALSE ;
 		IO_Conveyor.bScan_Failed := FALSE;
 		IO.bRe_run_Fire := FALSE;
-		IO.bScan_Fire := FALSE;
-   		IO.bRe_run_Fire := FALSE;
 		iSTEP := 9;
 
 END_CASE
@@ -425,10 +420,6 @@ END_IF
       <LineId Id="1532" Count="0" />
       <LineId Id="942" Count="0" />
       <LineId Id="1087" Count="0" />
-      <LineId Id="1757" Count="2" />
-      <LineId Id="1761" Count="0" />
-      <LineId Id="1763" Count="1" />
-      <LineId Id="1760" Count="0" />
       <LineId Id="1170" Count="0" />
       <LineId Id="998" Count="0" />
       <LineId Id="1380" Count="0" />
@@ -460,9 +451,11 @@ END_IF
       <LineId Id="1115" Count="0" />
       <LineId Id="1538" Count="0" />
       <LineId Id="1489" Count="0" />
+      <LineId Id="854" Count="0" />
+      <LineId Id="1490" Count="0" />
       <LineId Id="853" Count="0" />
+      <LineId Id="1450" Count="0" />
       <LineId Id="1455" Count="0" />
-      <LineId Id="1766" Count="0" />
       <LineId Id="1487" Count="0" />
       <LineId Id="1333" Count="0" />
       <LineId Id="1330" Count="0" />
@@ -470,9 +463,11 @@ END_IF
       <LineId Id="1484" Count="0" />
       <LineId Id="1483" Count="0" />
       <LineId Id="1331" Count="0" />
+      <LineId Id="860" Count="0" />
+      <LineId Id="1493" Count="0" />
+      <LineId Id="861" Count="0" />
       <LineId Id="1482" Count="0" />
       <LineId Id="1329" Count="0" />
-      <LineId Id="1767" Count="1" />
       <LineId Id="1335" Count="0" />
       <LineId Id="855" Count="0" />
       <LineId Id="9" Count="0" />

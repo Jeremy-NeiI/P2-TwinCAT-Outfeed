@@ -3,6 +3,8 @@
   <POU Name="FB_Keyence" Id="{da377b05-08b8-477a-a98a-0f7a26e404a9}" SpecialFunc="None">
     <Declaration><![CDATA[FUNCTION_BLOCK FB_Keyence
 VAR_INPUT
+	bKUKA_JobDone					: BOOL := TRUE	;
+	
 END_VAR
 VAR_OUTPUT
 	Outfeed_Complete				: BOOL	;
@@ -10,7 +12,52 @@ VAR_OUTPUT
 	
 END_VAR
 VAR
+	
 	rNewRx	:	R_TRIG;
+	iSTEP 							: INT := 0;
+	i 								: INT ;
+	j 								: INT ;
+	Floor2BoxId						: STRING(20);
+	Floor1BoxId						: STRING(20);
+
+//=============Outfeed: PLC to WCS Comms===================
+	ReadyTo_DropTask				: INT := 0;
+	ReadyFor_DropOff				: INT := 0;
+	Receive_DropOffComplete			: INT := 0;
+	Request_KukaRackLocation 		: INT := 0;
+	KukaRack_InsertComplete 		: INT := 0;
+//=============Infeed: PLC to WCS Comms===================
+	BinReadyAtPickupZone 			: INT := 0;
+	ReadyToPickup 					: INT := 0;
+	ReceivePickupComplete 			: INT := 0;
+	
+	
+	//=============Outfeed: WCS to PLC Comms===================
+	RequestTo_DropTask 				: INT := 0;
+	RequestTo_DropOff 				: INT := 1;
+	DropOff_Complete 				: INT := 2;
+	QRCode_Approve					: INT := 3;
+	Kuka_RackLocation				: INT := 4;
+	Receive_KukaRackInsertComplete	: INT := 5;
+//=============Infeed: WCS to PLC Comms====================
+	CheckQRCodeID 					: INT := 6;
+	ReceiveBinReadyAtPickupZone 	: INT := 7;
+	RequestPickup 					: INT := 8;
+	PickupComplete 					: INT := 9;
+	
+	bInsert_binID					: BOOL := FALSE;
+	withBoxId 						: BOOL := FALSE;
+	sSend_Message 					: STRING;
+	sReceived_Message 				: STRING;
+	aReceived_Message_Array			: ARRAY[0..19] OF STRING;
+	iReceived_Message_data 			: INT;
+	data_send_flag					: BOOL := FALSE;
+	returnLen 						: INT;
+	bOnly_Blank						: BOOL;
+	Run_Comms						: BOOL := FALSE;
+	notEmpty 						: BOOL;
+	resetData 						: BOOL := FALSE;
+	
 	Cam_Timeout							: TON ;
 	log_true						: INT := 0;
 END_VAR]]></Declaration>
